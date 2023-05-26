@@ -1,0 +1,44 @@
+[
+    {
+        "transactionName": "tpccJavaExists",
+        "transactionLabel": "A test tpccJavaExists transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "createTpccJava",
+        "transactionLabel": "A test createTpccJava transaction",
+        "arguments": [
+            "001",
+            "some value"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "readTpccJava",
+        "transactionLabel": "A test readTpccJava transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "updateTpccJava",
+        "transactionLabel": "A test updateTpccJava transaction",
+        "arguments": [
+            "001",
+            "some other value"
+        ],
+        "transientData": {}
+    },
+    {
+        "transactionName": "deleteTpccJava",
+        "transactionLabel": "A test deleteTpccJava transaction",
+        "arguments": [
+            "001"
+        ],
+        "transientData": {}
+    }
+]
