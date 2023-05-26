@@ -595,7 +595,7 @@ public class TPCC implements ContractInterface {
             //         customer.c_data = customer.c_data.slice(0, 500);
             //}
             if (customer.c_credit.equals("BC")) {
-                String history = String.join(customer.c_id, customer.c_d_id, customer.c_w_id, district.d_id, warehouse.w_id, params.h_amount);
+                String history = customer.c_id + " " +  customer.c_d_id + " " +  customer.c_w_id + " " +  district.d_id + " " +  warehouse.w_id + " " +  params.h_amount;
                 customer.c_data = history + "|" + customer.c_data;
                 if (customer.c_data.length() > 500)
                     customer.c_data = customer.c_data.substring(0, 500);
@@ -674,6 +674,7 @@ public class TPCC implements ContractInterface {
             common.log(err.toString(), ctx, "error");
             //throw err;
         }
+        return null;
     }
 
     /**
@@ -709,7 +710,7 @@ public class TPCC implements ContractInterface {
             int lowStock = 0;
             for (int i_id : recentItemIds) {
                 Stock stock = LedgerUtils.getStock(ctx, params.w_id, i_id);
-                if (stock < params.threshold) {
+                if (stock.s_quantity < params.threshold) {
                     lowStock += 1;
                 }
             }
@@ -733,11 +734,12 @@ public class TPCC implements ContractInterface {
             common.log(err.toString(), ctx, "error");
             //throw err;
         }
+        return null;
     }
 
     /**
      * Initializes the TPC-C chaincode.
-     * @param {Context} ctx The TX context.
+     * @param ctx The TX context.
      */
     public static void instantiate(Context ctx) {
         common.log("Instantiating TPC-C chaincode", ctx, "info");

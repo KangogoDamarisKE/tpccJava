@@ -343,7 +343,9 @@ public class LedgerUtils {
     public static void createCustomer(Context ctx, String entry) throws Exception {
         Customer customer = ParseUtils.parseCustomer(entry);
         LedgerUtils.createEntry(ctx, TABLES.CUSTOMER, new String[]{common.pad(customer.c_w_id), common.pad(customer.c_d_id)}, entry);
-        LedgerUtils.createEntry(ctx, TABLES.CUSTOMER_LAST_NAME, new String[]{common.pad(customer.c_w_id), common.pad(customer.c_d_id), customer.c_last, common.pad(customer.c_id)}, entry);
+        
+        String[] keyParts = new String[]{common.pad(customer.c_w_id), common.pad(customer.c_d_id), customer.c_last, common.pad(customer.c_id)};
+        LedgerUtils.createEntry(ctx, TABLES.CUSTOMER_LAST_NAME, keyParts, entry);
     }
 
     /**
@@ -480,12 +482,13 @@ public class LedgerUtils {
      * @param {Context} ctx The TX context.
      * @param {number} no_w_id The new order's warehouse ID.
      * @param {number} no_d_id The new order's district ID.
-     * @return {NewOrder} The oldest new order.
+     * @return The oldest new order.
      * @throws Exception 
      */
     public static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
         //log("Searching for oldest New Order(" + no_w_id + "," + no_d_id + "," + no_o_id , ctx);        
-        String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};
+        String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};        
+
         NewOrder oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, ParseUtils.parseNewOrder, true);
 
         // if (oldest) {
@@ -552,7 +555,7 @@ public class LedgerUtils {
      * @throws Exception if the last order is not found.
      */
     public static Order getLastOrderOfCustomer(Context ctx, int o_w_id, int o_d_id, int o_c_id) throws Exception {
-        Function<String , Object> matchFunction = entry -> {
+                Function<String , Object> matchFunction = entry -> {
             Order order = ParseUtils.parseOrder(entry);
             if (order.o_c_id == o_c_id) {
                 return order;
@@ -567,8 +570,9 @@ public class LedgerUtils {
             throw new Exception(String.format("Could not find last Order(%d, %d, o_id) of Customer(%d, %d, %d)", o_w_id, o_d_id, o_w_id, o_d_id, o_c_id));
         }
         // log(`Retrieved last Order(${o_w_id}, ${o_d_id}, ${lastOrder.o_id}) of Customer(${o_w_id}, ${o_d_id}, ${o_c_id})`, ctx);
-        return lastOrder.toString();
+        return (Order) lastOrder;
     }
+
 
     /**
      * Updates an order in the state database.
