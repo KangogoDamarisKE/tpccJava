@@ -44,32 +44,16 @@ public class common {
     }
 
 
-    // public enum TABLES {
-    //     WAREHOUSE = "WAREHOUSE"; 
-    //     // DISTRICT,
-    //     // CUSTOMER,
-    //     // CUSTOMER_LAST_NAME,
-    //     // HISTORY,
-    //     // NEW_ORDER,
-    //     // ORDERS,
-    //     // ORDER_LINE,
-    //     // ITEM,
-    //     // STOCK
-    // }
-
-
     //Logs the given debug message by appending the TX ID stub before it.
     public static void log(String msg, Context ctx, String level) {
-        // String txId = stub != null ? "<" + stub.getTxId().substring(0, 8) + "> " : "";
-        // logger.log(Level.parse(level), txId + msg);
+
     }
 
     private static final int padLength = Integer.MAX_VALUE;
    
     /**
      * Converts the number to text and pads it to a fix length.
-     * @param num The number to pad.
-     * @return 
+     * @param num The number to pad. 
      * @return The padded number text.
      */
     public static String pad(int num) {

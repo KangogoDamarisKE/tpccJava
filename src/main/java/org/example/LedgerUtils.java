@@ -37,6 +37,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -67,9 +68,9 @@ public class LedgerUtils {
         String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
         byte[] buffer = entryString.getBytes(UTF_8);
 
-        final long start = System.currentTimeMillis();
+        //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
-        final long end = System.currentTimeMillis();
+        //final long end = System.currentTimeMillis();
 
         // ctx.getTxInfo().stat_put_cnt += 1;
         // ctx.getTxInfo().stat_put_size_bytes += buffer.length;
@@ -91,9 +92,9 @@ public class LedgerUtils {
         String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
         byte[] buffer = entryString.getBytes(UTF_8);
 
-        final long start = System.currentTimeMillis();
+        //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
-        final long end = System.currentTimeMillis();
+        //final long end = System.currentTimeMillis();
 
         // ctx.getTxInfo().stat_put_cnt += 1;
         // ctx.getTxInfo().stat_put_size_bytes += buffer.length;
@@ -112,9 +113,9 @@ public class LedgerUtils {
     public static String getEntry(Context ctx, String type, String[] keyParts) throws Exception {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
 
-        final long start = System.currentTimeMillis();
+        //final long start = System.currentTimeMillis();
         byte[] data = ctx.getStub().getState(key.toString());
-        final long end = System.currentTimeMillis();
+        //final long end = System.currentTimeMillis();
 
         // ctx.getTxinfo().stat_get_cnt += 1;
         // ctx.getTxinfo().stat_get_exec_total_ms += end - start;
@@ -143,16 +144,61 @@ public class LedgerUtils {
     public static void deleteEntry(Context ctx, String type, String[] keyParts) throws Exception {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
 
-        final long start = System.currentTimeMillis();
+        //final long start = System.currentTimeMillis();
         ctx.getStub().delState(key.toString());
-        final long end = System.currentTimeMillis();
+        //final long end = System.currentTimeMillis();
 
         // ctx.getTxinfo().stat_del_cnt += 1;
         // ctx.getTxinfo().stat_del_exec_total_ms += end - start;
         // log("Deleted entry: " + key, ctx);
     }  
     
-    /**
+    // /**
+    //  * Retrieves entries from the state database that matches certain criteria.
+    //  * @param ctx The TX context.
+    //  * @param type The type of entries to search.
+    //  * @param keyParts The parts of the entries private key.
+    //  * @param matchFunction The function that determines matches.
+    //  * @return The retrieved entries.
+    //  * @throws Exception
+    //  */
+    // static List<byte[]> select(Context ctx, String type, String[] keyParts, Function<String, Boolean> matchFunction) throws Exception {
+    //     CompositeKey compositeKey = ctx.getStub().createCompositeKey(type, keyParts);
+    //     Iterator<KeyValue> iterator = ctx.getStub().getStateByPartialCompositeKey(compositeKey.toString()).iterator();
+    //     List<byte[]> matches = new ArrayList<>();
+
+    //     try {
+    //         while (iterator.hasNext()) {
+    //             KeyValue res = iterator.next();
+
+    //             byte[] value = res.getValue();
+    //             String buffer = new String(value, UTF_8);
+    //             Boolean match = matchFunction.apply(buffer);
+    //             if (match != null) {
+    //                 matches.add(match);
+    //             }
+    //         }
+    //     } catch (Exception e) {
+    //         common.log(e.toString(), ctx, "error");
+        
+    //     }
+    //     return matches;
+    // }
+
+    // /**
+    //  * Retrieves the first entry from the state database that matches certain criteria.
+    //  * @param ctx The TX context.
+    //  * @param type The type of entries to search.
+    //  * @param keyParts The parts of the entries private key.
+    //  * @param matchFunction The function that determines matches.
+    //  * @return The retrieved entry.
+    //  * @throws Exception
+    //  */
+    // static Object selectFirst(Context ctx, String type, String[] keyParts, Function<String, Object> matchFunction) throws Exception {
+    //     List<Object> matches = LedgerUtils.select(ctx, type, keyParts, matchFunction);
+    //     return matches.size() > 0 ? matches.get(0) : null;
+    // }
+        /**
      * Retrieves entries from the state database that matches certain criteria.
      * @param ctx The TX context.
      * @param type The type of entries to search.
@@ -162,35 +208,29 @@ public class LedgerUtils {
      * @return The retrieved entries.
      * @throws Exception
      */
-    static Object select(Context ctx, String type, String[] keyParts, Function<String, Object> matchFunction, boolean firstMatch) throws Exception {
+    public static List<Object> select(Context ctx, String type, String[] keyParts, Function<String, Object> matchFunction, boolean firstMatch) throws Exception {
         CompositeKey compositeKey = ctx.getStub().createCompositeKey(type, keyParts);
-        QueryResultsIterator<KeyValue> iterator = ctx.getStub().getStateByPartialCompositeKey(compositeKey.toString());
-        //QueryResultsIterator<KeyValue> iterator = ctx.getStub().getStateByPartialCompositeKey(type, keyParts);
-        
-        // log("Created partial iterator ");
-
+        Iterator<KeyValue> iterator = ctx.getStub().getStateByPartialCompositeKey(compositeKey.toString()).iterator();
         List<Object> matches = new ArrayList<>();
         int retrieved = 0;
-        
         try {
             while (iterator.hasNext()) {
-                final long start = System.currentTimeMillis();
-                KeyValue res = iterator.next();
-                long end = System.currentTimeMillis();
+                
+                KeyValue res = iterator.next();               
 
                 retrieved += 1;
 
                 byte[] buffer = res.getValue();
-                // ctx.getTxinfo().stat_iterate_cnt += 1;
-                // ctx.getTxinfo().stat_iterate_size_bytes += buffer != null ? buffer.length : 0;
-                // ctx.getTxinfo().stat_iterate_exec_total_ms += end - start;
+                
 
                 String entry = new String(buffer, UTF_8);
                 //log("Enumerated entry:");
 
                 Object match = matchFunction.apply(entry);
+
                 if (match != null) {
                     matches.add(match);
+
                     if (firstMatch) {
                         break;
                     }
@@ -198,15 +238,10 @@ public class LedgerUtils {
             }
         } catch (Exception e) {
             common.log(e.toString(), ctx, "error");
-            throw e;
-        } finally {
-            iterator.close();
+            throw e;        
         }
-
-        //log("Matched " +matches.length + "entries out of" +retrieved, ctx);
-        return firstMatch ? matches.get(0) : matches;
+        return firstMatch ? matches.subList(0, 1) : matches;
     }
-
     /**
      * WAREHOUSE API
      */
@@ -229,7 +264,7 @@ public class LedgerUtils {
      * @param w_id The warehouse ID.
      * @return The retrieved warehouse.
      */
-    public static Warehouse getWarehouse(Context ctx, int w_id) {
+    public static Warehouse getWarehouse(Context ctx, int w_id) throws Exception{
 
         //String[] entry1 = LedgerUtils.getEntry(ctx, TABLES.WAREHOUSE, new String[]{String.format("%03d", w_id)});
 
@@ -276,7 +311,7 @@ public class LedgerUtils {
      * @param d_id The district ID.
      * @return The retrieved district.     * 
      */
-    public static District getDistrict(Context ctx, int d_w_id, int d_id) {
+    public static District getDistrict(Context ctx, int d_w_id, int d_id) throws Exception{
         String entry = LedgerUtils.getEntry(ctx, TABLES.DISTRICT, new String[]{common.pad(d_w_id), common.pad(d_id)});
         if (entry == null) {
             throw new Exception("Could not retrieve District(" + d_w_id + ", " + d_id + ")");
@@ -319,7 +354,7 @@ public class LedgerUtils {
      * @param c_id The customer ID.
      * @return The retrieved customer.
      */
-    public static Customer getCustomer(Context ctx, int c_w_id, int c_d_id, int c_id) {
+    public static Customer getCustomer(Context ctx, int c_w_id, int c_d_id, int c_id) throws Exception {
         String entry = LedgerUtils.getEntry(ctx, TABLES.CUSTOMER, new String[]{common.pad(c_w_id), common.pad(c_d_id), common.pad(c_id)});
         if (entry == null) {
             throw new Exception("Could not retrieve Customer(" + c_w_id + ", " + c_d_id + " , " + c_id +")");
@@ -338,21 +373,23 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static List<Customer> getCustomersByLastName(Context ctx, int c_w_id, int c_d_id, String c_last) throws Exception {
-        Function<String, Customer> matchFunction = entry -> {
+        Function<String, Object> matchFunction = entry -> {
             Customer customer = ParseUtils.parseCustomer(entry);
             return customer.c_last.equals(c_last) ? customer : null;
         };
 
-        //log("Searching for Customers (" + c_w_id + "," + c_d_id + ", "  + c_id + ") with last name " + c_last  , ctx);
-        List<byte[]> entries = LedgerUtils.select(ctx, TABLES.CUSTOMER_LAST_NAME, new String[]{common.pad(c_w_id), common.pad(c_d_id), c_last}, matchFunction, false);
+        String[] keyParts = new String[]{common.pad(c_w_id), common.pad(c_d_id), c_last};
+        //String[] keyParts = {String.format("%010d", c_w_id), String.format("%02d", c_d_id), c_last};
+
+        List<Object> entries = select(ctx, TABLES.CUSTOMER_LAST_NAME, keyParts, matchFunction, false);
+
         if (entries.size() == 0) {
             throw new Exception(String.format("Could not find Customers(%d, %d, c_id) matching last name \"%s\"", c_w_id, c_d_id, c_last));
         }
 
-        //log("Found" + entries.length + "Customers(" + c_w_id + "," + c_d_id + "," + c_id + ") with last name " + c_last , ctx);
         List<Customer> customers = new ArrayList<>();
-        for (byte[] entry : entries) {
-            customers.add(ParseUtils.parseCustomer(entry.toString()));
+        for (Object entry : entries) {
+            customers.add((Customer) entry);
         }
         return customers;
     }
@@ -383,25 +420,10 @@ public class LedgerUtils {
             customerList.sort((c1, c2) -> c1.c_first.compareTo(c2.c_first));
             int position = (int) Math.ceil(customerList.size() / 2.0);
             return customerList.get(position - 1);
-        } else {
+        } 
+        else {
             throw new Exception("Neither the customer ID nor the customer last name parameter is supplied");
-        }
-        //////////////////////////////////////////////
-        // static Customer getCustomersByIdOrLastName(Context ctx, int c_w_id, int c_d_id, int c_id, String c_last) throws Exception {
-        //     if (c_id != null) {
-        //         return LedgerUtils.getCustomer(ctx, c_w_id, c_d_id, c_id).get();
-        //     } else if (c_last != null) {
-        //         CompletableFuture<List<Customer>> customerListFuture = LedgerUtils.getCustomersByLastName(ctx, c_w_id, c_d_id, c_last);
-        //         List<Customer> customerList = customerListFuture.get();
-        //         customerList.sort((c1, c2) -> c1.getC_first().compareTo(c2.getC_first()));
-        //         int position = (int) Math.ceil(customerList.size() / 2.0);
-        //         return customerList.get(position - 1);
-        //     } else {
-        //         throw new Exception("Neither the customer ID nor the customer last name parameter is supplied");
-        //     }
-        // }
-///////////////////////////////////////////////        
-
+        }    
     }
 
     /**
@@ -411,7 +433,10 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static void updateCustomer(Context ctx, Customer entry) throws Exception {
-        LedgerUtils.updateEntry(ctx, TABLES.CUSTOMER, new String[]{common.pad(entry.c_w_id), common.pad(entry.c_d_id), common.pad(entry.c_id)}, entry);
+
+        String[] keyParts = new String[]{common.pad(entry.c_w_id), common.pad(entry.c_d_id), common.pad(entry.c_id)};
+
+        LedgerUtils.updateEntry(ctx, TABLES.CUSTOMER, keyParts, entry);
         LedgerUtils.updateEntry(ctx, TABLES.CUSTOMER_LAST_NAME,
         new String[]{common.pad(entry.c_w_id), common.pad(entry.c_d_id), entry.c_last, common.pad(entry.c_id)}, entry);
     } 
@@ -428,7 +453,9 @@ public class LedgerUtils {
      */
     public static void createHistory(Context ctx, String entry) throws Exception {
         History history = ParseUtils.parseHistory(entry);
-        LedgerUtils.createEntry(ctx, TABLES.HISTORY, new String[]{common.pad(history.h_c_w_id), common.pad(history.h_c_d_id), common.pad(history.h_c_id), history.h_date}, entry);
+
+        String[] keyParts = new String[]{common.pad(history.h_c_w_id), common.pad(history.h_c_d_id), common.pad(history.h_c_id), history.h_date};
+        LedgerUtils.createEntry(ctx, TABLES.HISTORY, keyParts, entry);
     }
 
     /**
@@ -441,9 +468,11 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @
      */
-    public static void createNewOrder(Context ctx, String entry) {
+    public static void createNewOrder(Context ctx, String entry) throws Exception {
         NewOrder newOrder = ParseUtils.parseNewOrder(entry);
-        LedgerUtils.createEntry(ctx, TABLES.NEW_ORDER, new String[]{common.pad(newOrder.no_w_id), common.pad(newOrder.no_d_id), common.pad(newOrder.no_o_id)}, entry);
+
+        String[] keyParts = new String[]{common.pad(newOrder.no_w_id), common.pad(newOrder.no_d_id), common.pad(newOrder.no_o_id)};
+        LedgerUtils.createEntry(ctx, TABLES.NEW_ORDER, keyParts, entry);
     }
 
     /**
@@ -455,8 +484,9 @@ public class LedgerUtils {
      * @throws Exception 
      */
     public static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
-        //log("Searching for oldest New Order(" + no_w_id + "," + no_d_id + "," + no_o_id , ctx);
-        NewOrder oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, new String[]{common.pad(no_w_id), common.pad(no_d_id)}, ParseUtils.parseNewOrder, true);
+        //log("Searching for oldest New Order(" + no_w_id + "," + no_d_id + "," + no_o_id , ctx);        
+        String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};
+        NewOrder oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, ParseUtils.parseNewOrder, true);
 
         // if (oldest) {
         //     log("Retrieved oldest oldest New Order(" + no_w_id + "," + no_d_id + "," + oldest.no_o_id + ")" , ctx);
@@ -471,8 +501,10 @@ public class LedgerUtils {
      * @param entry The new order object.
      * @
      */
-    public static void deleteNewOrder(Context ctx, NewOrder entry) {
-        LedgerUtils.deleteEntry(ctx, TABLES.NEW_ORDER, new String[]{common.pad(entry.no_w_id), common.pad(entry.no_d_id), common.pad(entry.no_o_id)});
+    public static void deleteNewOrder(Context ctx, NewOrder entry) throws Exception {
+
+        String[] keyParts = new String[]{common.pad(entry.no_w_id), common.pad(entry.no_d_id), common.pad(entry.no_o_id)};
+        LedgerUtils.deleteEntry(ctx, TABLES.NEW_ORDER, keyParts);
     }
 
     /**
@@ -485,9 +517,11 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @
      */
-    public static void createOrder(Context ctx, String entry) {
+    public static void createOrder(Context ctx, String entry) throws Exception {
         Order order = ParseUtils.parseOrder(entry) ;
-        LedgerUtils.createEntry(ctx, TABLES.ORDERS, new String[] {common.pad(order.o_w_id), common.pad(order.o_d_id), common.pad(Integer.MAX_VALUE - order.o_id)}, entry);
+
+        String[] keyParts = new String[] {common.pad(order.o_w_id), common.pad(order.o_d_id), common.pad(Integer.MAX_VALUE - order.o_id)};
+        LedgerUtils.createEntry(ctx, TABLES.ORDERS, keyParts, entry);
     }
 
     /**
@@ -498,8 +532,9 @@ public class LedgerUtils {
      * @param o_id The order ID.
      * @return  The retrieved order.
      */
-    public static Order getOrder(Context ctx, int o_w_id, int o_d_id, int o_id) {
-        String entry = LedgerUtils.getEntry(ctx, TABLES.ORDERS, new String[] {common.pad(o_w_id), common.pad(o_d_id), common.pad(Integer.MAX_VALUE - o_id)});
+    public static Order getOrder(Context ctx, int o_w_id, int o_d_id, int o_id) throws Exception {
+        String[] keyParts = new String[] {common.pad(o_w_id), common.pad(o_d_id), common.pad(Integer.MAX_VALUE - o_id)};
+        String entry = LedgerUtils.getEntry(ctx, TABLES.ORDERS, keyParts);
         if (entry == null) {
             throw new Exception("Could not retrieve Order(" + o_w_id + ", " + o_d_id + ", "+ o_id + ")");
         }
@@ -516,8 +551,8 @@ public class LedgerUtils {
      * @return The retrieved order.
      * @throws Exception if the last order is not found.
      */
-    static Order getLastOrderOfCustomer(Context ctx, int o_w_id, int o_d_id, int o_c_id) throws Exception {
-        Function<byte[], Order> matchFunction = entry -> {
+    public static Order getLastOrderOfCustomer(Context ctx, int o_w_id, int o_d_id, int o_c_id) throws Exception {
+        Function<String , Object> matchFunction = entry -> {
             Order order = ParseUtils.parseOrder(entry);
             if (order.o_c_id == o_c_id) {
                 return order;
@@ -525,23 +560,25 @@ public class LedgerUtils {
             return null;
         };
         // log(`Searching for last Order(${o_w_id}, ${o_d_id}, o_id) of Customer(${o_w_id}, ${o_d_id}, ${o_c_id})`, ctx);
-        Order lastOrder = LedgerUtils.select(ctx, TABLES.ORDERS, new String[]{common.pad(o_w_id), common.pad(o_d_id)}, matchFunction, true);
+        
+        String[] keyParts = new String[]{common.pad(o_w_id), common.pad(o_d_id)};
+        List<Object> lastOrder = select(ctx, TABLES.ORDERS, keyParts, matchFunction, true);
         if (lastOrder == null) {
             throw new Exception(String.format("Could not find last Order(%d, %d, o_id) of Customer(%d, %d, %d)", o_w_id, o_d_id, o_w_id, o_d_id, o_c_id));
         }
         // log(`Retrieved last Order(${o_w_id}, ${o_d_id}, ${lastOrder.o_id}) of Customer(${o_w_id}, ${o_d_id}, ${o_c_id})`, ctx);
-        return lastOrder;
+        return lastOrder.toString();
     }
-
 
     /**
      * Updates an order in the state database.
      * @param ctx The TX context.
      * @param entry The order object.
-     * @async
+     * @throws Exception
      */
-    public static void updateOrder(Context ctx, Order entry) {
-        LedgerUtils.updateEntry(ctx, TABLES.ORDERS, new String[] {common.pad(entry.o_w_id), common.pad(entry.o_d_id), common.pad(Integer.MAX_VALUE - entry.o_id)}, entry);
+    public static void updateOrder(Context ctx, Order entry) throws Exception {
+        String[] keyParts = new String[] {common.pad(entry.o_w_id), common.pad(entry.o_d_id), common.pad(Integer.MAX_VALUE - entry.o_id)};
+        LedgerUtils.updateEntry(ctx, TABLES.ORDERS, keyParts, entry);
     }
 
     /**
@@ -556,8 +593,10 @@ public class LedgerUtils {
      */
     public static void createOrderLine(Context ctx, String entry) throws Exception {
         OrderLine orderLine = ParseUtils.parseOrderLine(entry);
-        LedgerUtils.createEntry(ctx, TABLES.ORDER_LINE, new String[] {common.pad(orderLine.ol_w_id), common.pad(orderLine.ol_d_id),
-            common.pad(orderLine.ol_o_id), common.pad(orderLine.ol_number)}, entry);
+
+        String[] keyParts = new String[] {common.pad(orderLine.ol_w_id), common.pad(orderLine.ol_d_id), 
+            common.pad(orderLine.ol_o_id), common.pad(orderLine.ol_number)};
+        LedgerUtils.createEntry(ctx, TABLES.ORDER_LINE, keyParts, entry);
     }
 
         /**
@@ -569,9 +608,10 @@ public class LedgerUtils {
      * @param ol_number The number of the order line.
      * @return {<OrderLine>} The retrieved order line.
      */
-    public static OrderLine getOrderLine(Context ctx, int ol_w_id, int ol_d_id, int ol_o_id, int ol_number) {
-        String entry = LedgerUtils.getEntry(ctx, TABLES.ORDER_LINE, new String[] {common.pad(ol_w_id), common.pad(ol_d_id), common.pad(ol_o_id), 
-            common.pad(ol_number)});
+    public static OrderLine getOrderLine(Context ctx, int ol_w_id, int ol_d_id, int ol_o_id, int ol_number) throws Exception {
+        String[] keyParts = new String[] {common.pad(ol_w_id), common.pad(ol_d_id), common.pad(ol_o_id), common.pad(ol_number)};
+        String entry = LedgerUtils.getEntry(ctx, TABLES.ORDER_LINE, keyParts);
+
         if (entry == null) {
             throw new Exception("Could not retrieve Order Line(" + ol_w_id + "," + ol_d_id + "," + ol_o_id + ", " + ol_number + ")");
         }
@@ -587,9 +627,12 @@ public class LedgerUtils {
      * @param entry The order line object.
      * @
      */
-    public static void updateOrderLine(Context ctx, OrderLine entry) {
-        LedgerUtils.updateEntry(ctx, TABLES.ORDER_LINE, new String[] {common.pad(entry.ol_w_id), common.pad(entry.ol_d_id), 
-            common.pad(entry.ol_o_id), common.pad(entry.ol_number)}, entry);
+    public static void updateOrderLine(Context ctx, OrderLine entry) throws Exception {
+
+        String[] keyParts = new String[] {common.pad(entry.ol_w_id), common.pad(entry.ol_d_id), 
+            common.pad(entry.ol_o_id), common.pad(entry.ol_number)};
+
+        LedgerUtils.updateEntry(ctx, TABLES.ORDER_LINE, keyParts, entry);
     }
 
 
@@ -603,7 +646,7 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @throws Exception
      */
-    public static void createItem(Context ctx, String entry) {
+    public static void createItem(Context ctx, String entry) throws Exception {
         Item item = ParseUtils.parseItem(entry);
         LedgerUtils.createEntry(ctx, TABLES.ITEM, new String[]{common.pad(item.i_id)}, entry);
     }
@@ -614,7 +657,7 @@ public class LedgerUtils {
      * @param i_id The item ID.
      * @return {<Item>} The retrieved item.
      */
-    public static Item getItem(Context ctx, int i_id) {
+    public static Item getItem(Context ctx, int i_id) throws Exception {
         String entry = LedgerUtils.getEntry(ctx, TABLES.ITEM, new String[] {common.pad(i_id)});
         //return entry ? ParseUtils.parseItem(entry) : (Item) null;
         return ParseUtils.parseItem(entry);
@@ -661,7 +704,7 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @async
      */
-    public static void createStock(Context ctx, String entry) {
+    public static void createStock(Context ctx, String entry) throws Exception {
         Stock stock = ParseUtils.parseStock(entry);        
         LedgerUtils.createEntry(ctx, TABLES.STOCK, new String[]{common.pad(stock.s_w_id), common.pad(stock.s_i_id)}, entry);
     }
@@ -673,7 +716,7 @@ public class LedgerUtils {
      * @param s_i_id The item ID.
      * @return {<Stock>} The retrieved stock.
      */
-    public static Stock getStock(Context ctx, int s_w_id, int s_i_id) {
+    public static Stock getStock(Context ctx, int s_w_id, int s_i_id) throws Exception {
         String entry = LedgerUtils.getEntry(ctx, TABLES.STOCK, new String[] {common.pad(s_w_id), common.pad(s_i_id)});
         if (entry == null) {
             throw new Exception("Could not retrieve Stock(" + s_w_id + ", " + s_i_id + ")" );
@@ -689,7 +732,7 @@ public class LedgerUtils {
      * @param entry The stock object.
      * @async
      */
-    public static void updateStock(Context ctx, Stock entry) {
+    public static void updateStock(Context ctx, Stock entry) throws Exception {
         LedgerUtils.updateEntry(ctx, TABLES.STOCK, new String[] {common.pad(entry.s_w_id), common.pad(entry.s_i_id)}, entry);
     }
 }
