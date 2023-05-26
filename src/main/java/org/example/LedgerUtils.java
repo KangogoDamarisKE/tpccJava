@@ -331,7 +331,11 @@ public class LedgerUtils {
     public static List<Customer> getCustomersByLastName(Context ctx, int c_w_id, int c_d_id, String c_last) throws Exception {
         Function<String, Object> matchFunction = entry -> {
             Customer customer = ParseUtils.parseCustomer(entry);
-            return customer.c_last.equals(c_last) ? customer : null;
+            if(customer.c_last == c_last)
+            {
+                return customer;
+            }
+            return null;
         };
         String[] keyParts = new String[]{common.pad(c_w_id), common.pad(c_d_id), c_last};  
         List<Object> entries = select(ctx, TABLES.CUSTOMER_LAST_NAME, keyParts, matchFunction, false);
@@ -439,13 +443,21 @@ public class LedgerUtils {
      */
     public static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
         //log("Searching for oldest New Order(" + no_w_id + "," + no_d_id + "," + no_o_id , ctx);        
+        Function<String, Object> matchFunction = entry -> {
+            NewOrder old = ParseUtils.parseNewOrder(entry); 
+            if (old.no_w_id == no_w_id) {
+                return old;
+            }
+            return null;
+        };
+
         String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};        
 
-        NewOrder oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, ParseUtils.parseNewOrder, true);
+        List<Object> oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, matchFunction, true);
         // if (oldest) {
         //     log("Retrieved oldest oldest New Order(" + no_w_id + "," + no_d_id + "," + oldest.no_o_id + ")" , ctx);
         // }
-        return oldest;
+        return (NewOrder) oldest;
     }
 
     /**
@@ -505,7 +517,7 @@ public class LedgerUtils {
      * @throws Exception if the last order is not found.
      */
     public static Order getLastOrderOfCustomer(Context ctx, int o_w_id, int o_d_id, int o_c_id) throws Exception {
-                Function<String , Object> matchFunction = entry -> {
+            Function<String , Object> matchFunction = entry -> {
             Order order = ParseUtils.parseOrder(entry);
             if (order.o_c_id == o_c_id) {
                 return order;
