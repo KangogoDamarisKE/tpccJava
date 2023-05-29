@@ -30,18 +30,9 @@ import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-
 import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
-//import static java.nio.charset.StandardCharsets.UTF_8;
 import org.hyperledger.fabric.contract.annotation.Transaction;
-
-
-
-
-
-
 
 
 @Contract(name = "TPCC",
@@ -736,7 +727,7 @@ public class TPCC implements ContractInterface {
         return null;
     }
 
-
+    @Transaction
     /**
      * Initializes the TPC-C chaincode.
      * @param ctx The TX context.
