@@ -17,18 +17,18 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
-import org.example.ParseUtils;
-import org.example.common;
+//import org.example.ParseUtils;
+//import org.example.common;
 import org.example.common.TABLES;
-import org.example.Warehouse;
+//import org.example.Warehouse;
 
 
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
-import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-import org.hyperledger.fabric.shim.ChaincodeStub;
+//import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
+//import org.hyperledger.fabric.shim.ChaincodeStub;
 
 import com.google.gson.Gson;
 
@@ -134,7 +134,7 @@ public class LedgerUtils {
         return null;
     }
 
-        /**
+    /**
      * Deletes the given record from the state database.
      * @param ctx The TX context.
      * @param type The type of the record.
@@ -153,7 +153,7 @@ public class LedgerUtils {
         // log("Deleted entry: " + key, ctx);
     }  
     
-        /**
+    /**
      * Retrieves entries from the state database that matches certain criteria.
      * @param ctx The TX context.
      * @param type The type of entries to search.

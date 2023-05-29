@@ -19,13 +19,8 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.example.ParseUtils;
-import org.example.LedgerUtils;
 
 
 import org.hyperledger.fabric.contract.Context;
@@ -33,14 +28,14 @@ import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
 import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
-import org.hyperledger.fabric.contract.annotation.Transaction;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 
 import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
-import static java.nio.charset.StandardCharsets.UTF_8;
+//import static java.nio.charset.StandardCharsets.UTF_8;
+import org.hyperledger.fabric.contract.annotation.Transaction;
 
 
 
@@ -100,7 +95,7 @@ public class TPCC implements ContractInterface {
     //     System.out.println(new Date().toInstant().toString() + " | info | txinfo | " + JSON.stringify(ctx.getTxInfo()));
     // }
 
-
+    @Transaction
      /**
      * Creates a new entry during the loading phase of the benchmark.
      * @param ctx The TX context.
@@ -160,6 +155,7 @@ public class TPCC implements ContractInterface {
         } 
     }
 
+    @Transaction
     /**
      * Performs the Delivery read-write TX profile.
      * @param ctx The TX context.
@@ -248,7 +244,7 @@ public class TPCC implements ContractInterface {
         return null;
     }
     
-
+    @Transaction
     /**
      * Performs the New Order read-write TX profile.
      * @param ctx The TX context.
@@ -475,6 +471,7 @@ public class TPCC implements ContractInterface {
         return null;
     }
 
+    @Transaction
     /**
      * Performs the Order Status read TX profile.
      * @param ctx The TX context.
@@ -545,7 +542,8 @@ public class TPCC implements ContractInterface {
         return null;
     }
 
-        /**
+    @Transaction
+    /**
      * Performs the Payment read-write TX profile.
      * @param ctx The TX context.
      * @param parameters The JSON encoded parameters of the TX profile.
@@ -677,6 +675,7 @@ public class TPCC implements ContractInterface {
         return null;
     }
 
+    @Transaction
     /**
      * Performs the Stock Level read TX profile.
      * @param ctx The TX context.
@@ -737,6 +736,7 @@ public class TPCC implements ContractInterface {
         return null;
     }
 
+
     /**
      * Initializes the TPC-C chaincode.
      * @param ctx The TX context.
@@ -745,7 +745,6 @@ public class TPCC implements ContractInterface {
         common.log("Instantiating TPC-C chaincode", ctx, "info");
     }
 }
-
 
 
 
