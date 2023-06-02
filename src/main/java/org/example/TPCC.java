@@ -79,73 +79,163 @@ public class TPCC implements ContractInterface {
     //     ctx.getTxInfo().md_tpcc_stock_level_recent_items = 0;
     // }
     
-    // public static void finishTx(Context ctx) {
+    // public void finishTx(Context ctx) {
     //     ctx.getTxInfo().cc_end_time_epoch_ms = new Date().getTime();
     //     ctx.getTxInfo().cc_duration_ms = ctx.getTxInfo().cc_end_time_epoch_ms - ctx.getTxInfo().cc_start_time_epoch_ms;
     
     //     System.out.println(new Date().toInstant().toString() + " | info | txinfo | " + JSON.stringify(ctx.getTxInfo()));
     // }
 
-    @Transaction
-     /**
-     * Creates a new entry during the loading phase of the benchmark.
-     * @param ctx The TX context.
-     * @param parameters The JSON encoded array of entries.
-     * @
-     */
-    public static void createEntries(Context ctx, String parameters) {
-        //addTxInfo(ctx);        
+    // @Transaction
+    //  /**
+    //  * Creates a new entry during the loading phase of the benchmark.
+    //  * @param ctx The TX context.
+    //  * @param parameters The JSON encoded array of entries.
+    //  * @
+    //  */
+    // public void createEntries(Context ctx, String parameters) {
+    //     //addTxInfo(ctx);        
 
-        JSONObject params = new JSONObject(parameters);
+    //     JSONObject params = new JSONObject(parameters);
         
-        JSONArray entryList = params.getJSONArray("entries");
+    //     JSONArray entryList = params.getJSONArray("entries");
 
-        //log("Starting Create Entries TX for " + entryList.length + "entries", ctx, "info");
+    //     //log("Starting Create Entries TX for " + entryList.length + "entries", ctx, "info");
 
-        try {
-            for (int i = 0; i < entryList.length(); i++) {
-                JSONObject entry = entryList.getJSONObject(i);
+    //     try {
+    //         for (int i = 0; i < entryList.length(); i++) {
+    //             JSONObject entry = entryList.getJSONObject(i);
 
-                switch (entry.getString("table")) {
-                    case common.TABLES.WAREHOUSE:
-                        LedgerUtils.createWarehouse(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.DISTRICT:
-                        LedgerUtils.createDistrict(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.CUSTOMER:
-                        LedgerUtils.createCustomer(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.HISTORY:
-                        LedgerUtils.createHistory(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.NEW_ORDER:
-                        LedgerUtils.createNewOrder(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.ORDERS:
-                        LedgerUtils.createOrder(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.ORDER_LINE:
-                        LedgerUtils.createOrderLine(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.ITEM:
-                        LedgerUtils.createItem(ctx, entry.getString("data"));
-                        break;
-                    case common.TABLES.STOCK:
-                        LedgerUtils.createStock(ctx, entry.getString("data"));
-                        break;
-                    default:
-                        throw new Exception("Unknown record type: " + entry.getString("table"));
-                }
-            }
+    //             switch (entry.getString("table")) {
+    //                 case common.TABLES.WAREHOUSE:
+    //                     LedgerUtils.createWarehouse(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.DISTRICT:
+    //                     LedgerUtils.createDistrict(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.CUSTOMER:
+    //                     LedgerUtils.createCustomer(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.HISTORY:
+    //                     LedgerUtils.createHistory(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.NEW_ORDER:
+    //                     LedgerUtils.createNewOrder(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.ORDERS:
+    //                     LedgerUtils.createOrder(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.ORDER_LINE:
+    //                     LedgerUtils.createOrderLine(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.ITEM:
+    //                     LedgerUtils.createItem(ctx, entry.getString("data"));
+    //                     break;
+    //                 case common.TABLES.STOCK:
+    //                     LedgerUtils.createStock(ctx, entry.getString("data"));
+    //                     break;
+    //                 default:
+    //                     throw new Exception("Unknown record type: " + entry.getString("table"));
+    //             }
+    //         }
 
-            // log('Finished Create Entries TX', ctx, 'info');
-        } 
-        catch (Exception err) {
-            common.log(err.toString(), ctx, "error");
-        } 
+    //         // log('Finished Create Entries TX', ctx, 'info');
+    //     } 
+    //     catch (Exception err) {
+    //         common.log(err.toString(), ctx, "error");
+    //     } 
+    // }
+
+    @Transaction
+    public void createWarehouseEntry(Context ctx, Warehouse warehouse){
+         try {
+            LedgerUtils.createWarehouse(ctx, warehouse);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+
     }
 
+    @Transaction
+    public void createDistrictEntry(Context ctx, District district){
+        try {
+           LedgerUtils.createDistrict(ctx, district);
+       } catch (Exception e) {            
+           common.log(e.toString(), ctx, "error");
+       }
+
+    }
+
+    @Transaction
+    public void createCustomerEntry(Context ctx, Customer customer){
+        try {
+            LedgerUtils.createCustomer(ctx, customer);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+
+    }
+
+    @Transaction
+    public void createHistoryEntry(Context ctx, History history){
+        try {
+            LedgerUtils.createHistory(ctx, history);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+    
+    }
+
+    @Transaction
+    public void createNewOrderEntry(Context ctx, NewOrder newOrder){
+        try {
+            LedgerUtils.createNewOrder(ctx, newOrder);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+    
+    }
+
+    @Transaction
+    public void createOrderEntry(Context ctx, Order order){
+        try {
+            LedgerUtils.createOrder(ctx, order);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+    
+    }
+
+    @Transaction
+    public void createOrderLineEntry(Context ctx, OrderLine ol){
+        try {
+            LedgerUtils.createOrderLine(ctx, ol);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+    
+    }
+
+    @Transaction
+    public void createItemEntry(Context ctx, Item item){
+        try {
+            LedgerUtils.createItem(ctx, item);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+    
+    }
+
+    @Transaction
+    public void createStockEntry(Context ctx, Stock stock){
+        try {
+            LedgerUtils.createStock(ctx, stock);
+        } catch (Exception e) {            
+            common.log(e.toString(), ctx, "error");
+        }
+    
+    }
+  
     @Transaction
     /**
      * Performs the Delivery read-write TX profile.
@@ -153,13 +243,13 @@ public class TPCC implements ContractInterface {
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
-    public static DoDeliveryOutput doDelivery(Context ctx, String parameters) {
+    public DoDeliveryOutput doDelivery(Context ctx, DeliveryParameters params) {
         //addTxInfo(ctx);
 
         // TPC-C 2.7.4.2
         // log(`Starting Delivery TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            final DeliveryParameters params = ParseUtils.parseDeliveryParameters(parameters);
+            //final DeliveryParameters params = ParseUtils.parseDeliveryParameters(parameters);
 
             // For a given warehouse number (W_ID), for each of the 10 districts (D_W_ID , D_ID)
             // within that warehouse, and for a given carrier number (O_CARRIER_ID):
@@ -242,13 +332,13 @@ public class TPCC implements ContractInterface {
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return {Promise<{object}>} The JSON encoded query results according to the specification.
      */
-    public static DoNewOrderOutput doNewOrder(Context ctx, String parameters) {
+    public DoNewOrderOutput doNewOrder(Context ctx, NewOrderParameters params) {
         //addTxInfo(ctx);
 
         // TPC-C 2.4.2.2
         // log(`Starting New Order TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            final NewOrderParameters params = ParseUtils.parseNewOrderParameters(parameters);
+            //final NewOrderParameters params = ParseUtils.parseNewOrderParameters(parameters);
 
             // The row in the WAREHOUSE table with matching W_ID is selected and W_TAX,
             // the warehouse tax rate, is retrieved.
@@ -469,11 +559,11 @@ public class TPCC implements ContractInterface {
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
-    public static DoOrderStatusOutput doOrderStatus(Context ctx, String parameters) {
+    public DoOrderStatusOutput doOrderStatus(Context ctx, OrderStatusParameters params) {
         // TPC-C 2.6.2.2
         // log(`Starting Order Status TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            final OrderStatusParameters params = ParseUtils.parseOrderStatusParameters(parameters);
+            //final OrderStatusParameters params = ParseUtils.parseOrderStatusParameters(parameters);
 
             Customer customer = LedgerUtils.getCustomersByIdOrLastName(ctx, params.w_id, params.d_id, params.c_id, params.c_last);
 
@@ -540,13 +630,13 @@ public class TPCC implements ContractInterface {
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
-    public static DoPaymentOutput doPayment(Context ctx, String parameters) {
+    public DoPaymentOutput doPayment(Context ctx, PaymentParameters params) {
         //addTxInfo(ctx);
 
         // TPC-C 2.5.2.2
         // log(`Starting Payment TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            PaymentParameters params = ParseUtils.parsePaymentParameters(parameters);
+            //PaymentParameters params = ParseUtils.parsePaymentParameters(parameters);
 
             // The row in the WAREHOUSE table with matching W_ID is selected. W_NAME,
             // W_STREET_1, W_STREET_2, W_CITY, W_STATE, and W_ZIP are retrieved and W_YTD, the
@@ -673,13 +763,13 @@ public class TPCC implements ContractInterface {
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
-    public static DoStockLevelOutput doStockLevel(Context ctx, String parameters) {
+    public DoStockLevelOutput doStockLevel(Context ctx, StockLevelParameters params) {
         //addTxInfo(ctx);
 
         // TPC-C 2.8.2.2
         // log(`Starting Stock Level TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            final StockLevelParameters params = ParseUtils.parseStockLevelParameters(parameters);
+            //final StockLevelParameters params = ParseUtils.parseStockLevelParameters(parameters);
 
             // The row in the DISTRICT table with matching D_W_ID and D_ID is selected and D_NEXT_O_ID
             // is retrieved.
@@ -732,7 +822,7 @@ public class TPCC implements ContractInterface {
      * Initializes the TPC-C chaincode.
      * @param ctx The TX context.
      */
-    public static void instantiate(Context ctx) {
+    public void instantiate(Context ctx) {
         common.log("Instantiating TPC-C chaincode", ctx, "info");
     }
 }

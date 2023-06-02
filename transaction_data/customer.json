@@ -1,0 +1,8 @@
+{
+    "c_id" : "001" , "c_d_id": "001", "c_w_id": "001", "c_first": "Ann" , 
+    "c_middle" : "Mill" , "c_last": "Miller" , "c_street_1": "1022", "c_street_2" : "12",
+    "c_city" : "Budapest", "c_state" : "Buda", "c_zip" : "+30",     "c_phone" : "123456",
+     "c_since" : "10-01-2023", "c_credit" : "GC", "c_credit_lim" : "10000.00", 
+     "c_discount" : "100.00", "c_balance" : "99000.00", "c_ytd_payment" : "2023",
+     "c_payment_cnt" : "15", "c_delivery_cnt" : "10", "c_data" : "Good"
+}

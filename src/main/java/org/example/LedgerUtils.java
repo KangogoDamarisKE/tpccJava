@@ -17,23 +17,14 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
-//import org.example.ParseUtils;
-//import org.example.common;
 import org.example.common.TABLES;
-//import org.example.Warehouse;
-
 
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
-//import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
-//import org.hyperledger.fabric.shim.ChaincodeStub;
 
 import com.google.gson.Gson;
-
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -66,7 +57,8 @@ public class LedgerUtils {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
 
         String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
-        byte[] buffer = entryString.getBytes(UTF_8);
+        
+        byte[] buffer = entryString.getBytes();
 
         //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
@@ -90,7 +82,7 @@ public class LedgerUtils {
     public static void updateEntry(Context ctx, String type, String[] keyParts, Object entry) throws Exception {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
         String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
-        byte[] buffer = entryString.getBytes(UTF_8);
+        byte[] buffer = entryString.getBytes();
 
         //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
@@ -174,7 +166,7 @@ public class LedgerUtils {
                 KeyValue res = iterator.next(); 
                 //retrieved += 1;
                 byte[] buffer = res.getValue();  
-                String entry = new String(buffer, UTF_8);
+                String entry = new String(buffer);
                 //log("Enumerated entry:");
 
                 Object match = matchFunction.apply(entry);
@@ -202,9 +194,9 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @throws Exception
      */
-    public static void createWarehouse(Context ctx, String entry) throws Exception {
-        //Warehouse warehouse = entry instanceof String ? ParseUtils.parseWarehouse(entry) : (Warehouse) entry;
-        Warehouse warehouse = ParseUtils.parseWarehouse(entry);
+    public static void createWarehouse(Context ctx, Object entry) throws Exception {
+        Warehouse warehouse = entry instanceof String ? ParseUtils.parseWarehouse((String) entry) : (Warehouse) entry;
+        //Warehouse warehouse = ParseUtils.parseWarehouse(string);
         LedgerUtils.createEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(warehouse.w_id)}, entry);
     }
 
@@ -247,9 +239,9 @@ public class LedgerUtils {
      * @param entry The JSON string or District object.
      * @throws Exception
      */
-    public static void createDistrict(Context ctx, String entry) throws Exception {
-        District district = ParseUtils.parseDistrict(entry);
-        //District district = entry instanceof String ? ParseUtils.parseDistrict(entry) : (District) entry;
+    public static void createDistrict(Context ctx, Object entry) throws Exception {
+        //District district = ParseUtils.parseDistrict(entry);
+        District district = entry instanceof String ? ParseUtils.parseDistrict((String) entry) : (District) entry;
         LedgerUtils.createEntry(ctx, TABLES.DISTRICT, new String[]{common.pad(district.d_w_id), common.pad(district.d_id)}, entry);
     }
 
@@ -291,8 +283,9 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @throws Exception
      */
-    public static void createCustomer(Context ctx, String entry) throws Exception {
-        Customer customer = ParseUtils.parseCustomer(entry);
+    public static void createCustomer(Context ctx, Object entry) throws Exception {
+        //Customer customer = ParseUtils.parseCustomer(entry);
+        Customer customer = entry instanceof String ? ParseUtils.parseCustomer((String) entry) : (Customer) entry;
 
         String[] keyParts = new String[]{common.pad(customer.c_w_id), common.pad(customer.c_d_id), common.pad(customer.c_id)};
         LedgerUtils.createEntry(ctx, TABLES.CUSTOMER, keyParts, entry);
@@ -409,8 +402,8 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @throws Exception
      */
-    public static void createHistory(Context ctx, String entry) throws Exception {
-        History history = ParseUtils.parseHistory(entry);
+    public static void createHistory(Context ctx, Object entry) throws Exception {
+        History history = entry instanceof String ? ParseUtils.parseHistory((String) entry) : (History) entry;
 
         String[] keyParts = new String[]{common.pad(history.h_c_w_id), common.pad(history.h_c_d_id), common.pad(history.h_c_id), history.h_date};
         LedgerUtils.createEntry(ctx, TABLES.HISTORY, keyParts, entry);
@@ -426,8 +419,8 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @
      */
-    public static void createNewOrder(Context ctx, String entry) throws Exception {
-        NewOrder newOrder = ParseUtils.parseNewOrder(entry);
+    public static void createNewOrder(Context ctx, Object entry) throws Exception {
+        NewOrder newOrder = entry instanceof String ? ParseUtils.parseNewOrder((String) entry) : (NewOrder) entry;
 
         String[] keyParts = new String[]{common.pad(newOrder.no_w_id), common.pad(newOrder.no_d_id), common.pad(newOrder.no_o_id)};
         LedgerUtils.createEntry(ctx, TABLES.NEW_ORDER, keyParts, entry);
@@ -482,8 +475,8 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @
      */
-    public static void createOrder(Context ctx, String entry) throws Exception {
-        Order order = ParseUtils.parseOrder(entry) ;
+    public static void createOrder(Context ctx, Object entry) throws Exception {
+        Order order = entry instanceof String ? ParseUtils.parseOrder((String) entry) : (Order) entry;
 
         String[] keyParts = new String[] {common.pad(order.o_w_id), common.pad(order.o_d_id), common.pad(Integer.MAX_VALUE - order.o_id)};
         LedgerUtils.createEntry(ctx, TABLES.ORDERS, keyParts, entry);
@@ -557,8 +550,8 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @
      */
-    public static void createOrderLine(Context ctx, String entry) throws Exception {
-        OrderLine orderLine = ParseUtils.parseOrderLine(entry);
+    public static void createOrderLine(Context ctx, Object entry) throws Exception {
+        OrderLine orderLine = entry instanceof String ? ParseUtils.parseOrderLine((String) entry) : (OrderLine) entry;
 
         String[] keyParts = new String[] {common.pad(orderLine.ol_w_id), common.pad(orderLine.ol_d_id), 
             common.pad(orderLine.ol_o_id), common.pad(orderLine.ol_number)};
@@ -612,8 +605,8 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @throws Exception
      */
-    public static void createItem(Context ctx, String entry) throws Exception {
-        Item item = ParseUtils.parseItem(entry);
+    public static void createItem(Context ctx, Object entry) throws Exception {
+        Item item = entry instanceof String ? ParseUtils.parseItem((String) entry) : (Item) entry;
         LedgerUtils.createEntry(ctx, TABLES.ITEM, new String[]{common.pad(item.i_id)}, entry);
     }
 
@@ -670,8 +663,8 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @async
      */
-    public static void createStock(Context ctx, String entry) throws Exception {
-        Stock stock = ParseUtils.parseStock(entry);        
+    public static void createStock(Context ctx, Object entry) throws Exception {
+        Stock stock = entry instanceof String ? ParseUtils.parseStock((String) entry) : (Stock) entry;        
         LedgerUtils.createEntry(ctx, TABLES.STOCK, new String[]{common.pad(stock.s_w_id), common.pad(stock.s_i_id)}, entry);
     }
 
