@@ -28,7 +28,7 @@ import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
 import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
-import org.json.JSONArray;
+//import org.json.JSONArray;
 import org.json.JSONObject;
 import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
@@ -148,7 +148,7 @@ public class TPCC implements ContractInterface {
 
     @Transaction
     public void createWarehouseEntry(Context ctx, Warehouse warehouse){
-         try {
+         try {            
             LedgerUtils.createWarehouse(ctx, warehouse);
         } catch (Exception e) {            
             common.log(e.toString(), ctx, "error");

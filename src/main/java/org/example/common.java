@@ -31,16 +31,16 @@ public class common {
      * //@type {{WAREHOUSE: string, DISTRICT: string, CUSTOMER: string, HISTORY: string, NEW_ORDER: string, ORDER: string, ORDER_LINE: string, ITEM: string, STOCK: string}}
      */
     public class TABLES{
-        public final static String WAREHOUSE = "WAREHOUSE";
-        public final static String DISTRICT = "DISTRICT";
-        public final static String CUSTOMER = "CUSTOMER";
-        public final static String CUSTOMER_LAST_NAME = "CUSTOMER_LAST_NAME";
-        public final static String HISTORY = "HISTORY";
-        public final static String NEW_ORDER = "NEW_ORDER";
-        public final static String ORDERS = "ORDERS";
-        public final static String ORDER_LINE = "ORDER_LINE";
-        public final static String ITEM = "ITEM";
-        public final static String STOCK = "STOCK";
+        final static String WAREHOUSE = "WAREHOUSE";
+        final static String DISTRICT = "DISTRICT";
+        final static String CUSTOMER = "CUSTOMER";
+        final static String CUSTOMER_LAST_NAME = "CUSTOMER_LAST_NAME";
+        final static String HISTORY = "HISTORY";
+        final static String NEW_ORDER = "NEW_ORDER";
+        final static String ORDERS = "ORDERS";
+        final static String ORDER_LINE = "ORDER_LINE";
+        final static String ITEM = "ITEM";
+        final static String STOCK = "STOCK";
     }
 
 
@@ -49,7 +49,7 @@ public class common {
 
     }
 
-    private static final int padLength = Integer.MAX_VALUE;
+    final static int padLength = Integer.toString(Integer.MAX_VALUE).length();
    
     /**
      * Converts the number to text and pads it to a fix length.
@@ -59,7 +59,7 @@ public class common {
     public static String pad(int num) {
         
         return String.format("%0" + padLength + "d", num);
-    }
+    } 
 
     
 }

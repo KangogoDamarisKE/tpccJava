@@ -19,13 +19,15 @@ package org.example;
 
 import org.hyperledger.fabric.contract.annotation.DataType;
 import com.google.gson.Gson;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @DataType
 public class ParseUtils {
-    private final static Gson gson = new Gson();
+    private final static Gson gson = new Gson();    
+    //private ObjectMapper objectMapper = new ObjectMapper();
 
-    //ObjectMapper objectMapper = new ObjectMapper();
-        
+   
     /**
      * Parses the parameters of a New Order TX. (To enable IDE code completion)
      * @param params The JSON string of the parameters.
@@ -33,8 +35,11 @@ public class ParseUtils {
      */
     public static NewOrderParameters parseNewOrderParameters(String params) throws Exception {
         //return objectMapper.readValue(params, NewOrderParameters.class);
-        return gson.fromJson(params, NewOrderParameters.class);
+        //return gson.fromJson(params, NewOrderParameters.class);
+        NewOrderParameters newOrderParams = gson.fromJson(params, NewOrderParameters.class);
+        return newOrderParams;
     }
+    
 
     /**
      * Parses the parameters of a Payment TX. (To enable IDE code completion)
@@ -43,7 +48,8 @@ public class ParseUtils {
      */
     public static PaymentParameters parsePaymentParameters(String params) throws Exception {
         //return objectMapper.readValue(params, PaymentParameters.class);
-        return gson.fromJson(params, PaymentParameters.class);
+        PaymentParameters paymentParams = gson.fromJson(params, PaymentParameters.class);
+        return paymentParams;
     }
 
     /**
@@ -52,8 +58,9 @@ public class ParseUtils {
      * @return {DeliveryParameters} The parsed parameters.
      */
     public static DeliveryParameters parseDeliveryParameters(String params) throws Exception {
-        //return objectMapper.readValue(params, DeliveryParameters.class);
-        return gson.fromJson(params, DeliveryParameters.class);
+        //return objectMapper.readValue(params, DeliveryParameters.class);        
+        DeliveryParameters deliveryParams = gson.fromJson(params, DeliveryParameters.class);
+        return deliveryParams;
     }
 
     /**
@@ -63,7 +70,8 @@ public class ParseUtils {
      */
     public static OrderStatusParameters parseOrderStatusParameters(String params) throws Exception {
         //return objectMapper.readValue(params, OrderStatusParameters.class);
-        return gson.fromJson(params, OrderStatusParameters.class);
+        OrderStatusParameters oStatusParams = gson.fromJson(params, OrderStatusParameters.class);
+        return oStatusParams;
     }
 
     /**
@@ -73,7 +81,8 @@ public class ParseUtils {
      */
     public static StockLevelParameters parseStockLevelParameters(String params) throws Exception {
         //return objectMapper.readValue(params, StockLevelParameters.class);
-        return gson.fromJson(params, StockLevelParameters.class);
+        StockLevelParameters stockLevelParams = gson.fromJson(params, StockLevelParameters.class);
+        return stockLevelParams;
     }
 
     /**
@@ -82,7 +91,8 @@ public class ParseUtils {
      * @return {Warehouse} The warehouse object.
      */
     public static Warehouse parseWarehouse(String jsonString) {
-        return gson.fromJson(jsonString, Warehouse.class);
+        Warehouse warehouseParams = gson.fromJson(jsonString, Warehouse.class);
+        return warehouseParams;
     }
 
         /**
@@ -91,7 +101,8 @@ public class ParseUtils {
      * @return {District} The district object.
      */
     public static District parseDistrict(String jsonString) {
-        return gson.fromJson(jsonString, District.class);
+        District distParams = gson.fromJson(jsonString, District.class);
+        return distParams;
     }
 
     /**
@@ -100,7 +111,8 @@ public class ParseUtils {
      * @return {Customer} The customer object.
      */
     public static Customer parseCustomer(String jsonString) {
-        return gson.fromJson(jsonString, Customer.class);
+        Customer custParams = gson.fromJson(jsonString, Customer.class);
+        return custParams;
     }
 
     /**
@@ -109,7 +121,8 @@ public class ParseUtils {
      * @return {History} The history object.
      */
     public static History parseHistory(String jsonString) {
-        return gson.fromJson(jsonString, History.class);
+        History historyParams= gson.fromJson(jsonString, History.class);
+        return historyParams;
     }
 
     /**
@@ -118,7 +131,8 @@ public class ParseUtils {
      * @return {NewOrder} The new order object.
      */
     public static NewOrder parseNewOrder(String jsonString) {
-        return gson.fromJson(jsonString, NewOrder.class);
+        NewOrder newOParams = gson.fromJson(jsonString, NewOrder.class);
+        return newOParams;
     }
 
     /**
@@ -126,8 +140,9 @@ public class ParseUtils {
      * @param {string} jsonString The JSON string of the order.
      * @return {Order} The order object.
      */     
-    public static Order parseOrder(String jsonString) {
-        return gson.fromJson(jsonString, Order.class);
+    public static Order parseOrder(String jsonString) {        
+        Order orderParams = gson.fromJson(jsonString, Order.class);
+        return orderParams;
     }
 
     /**
@@ -136,7 +151,8 @@ public class ParseUtils {
      * @return {OrderLine} The order line object.
      */
     public static OrderLine parseOrderLine(String jsonString) {
-        return gson.fromJson(jsonString, OrderLine.class);
+        OrderLine oLineParams = gson.fromJson(jsonString, OrderLine.class);
+        return oLineParams;
     }
 
     /**
@@ -145,7 +161,8 @@ public class ParseUtils {
      * @return {Item} The item object.
      */
     public static Item parseItem(String jsonString) {
-    return gson.fromJson(jsonString, Item.class);
+        Item itemParams = gson.fromJson(jsonString, Item.class);
+        return itemParams;
     }
 
     /**
@@ -154,7 +171,8 @@ public class ParseUtils {
      * @return {Stock} The stock object.
      */
     public static Stock parseStock(String jsonString) {
-        return gson.fromJson(jsonString, Stock.class);
+        Stock stockParams = gson.fromJson(jsonString, Stock.class);
+        return stockParams;
     }
 
 } 

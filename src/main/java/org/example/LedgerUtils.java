@@ -24,8 +24,9 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ import java.util.function.Function;
 
  @DataType()
 public class LedgerUtils {
-    private final static Gson gson = new Gson();
+    //private final static Gson gson = new Gson();
 
     /**
      * LOW-LEVEL API
@@ -56,9 +57,9 @@ public class LedgerUtils {
     public static void createEntry(Context ctx, String type, String[] keyParts, Object entry) throws Exception {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
 
-        String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
+        String entryString = entry instanceof String ? (String) entry : entry.toString();
         
-        byte[] buffer = entryString.getBytes();
+        byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
 
         //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
@@ -81,8 +82,9 @@ public class LedgerUtils {
      */
     public static void updateEntry(Context ctx, String type, String[] keyParts, Object entry) throws Exception {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
-        String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
-        byte[] buffer = entryString.getBytes();
+        String entryString = entry instanceof String ? (String) entry : entry.toString();
+        
+        byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
 
         //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
@@ -196,7 +198,7 @@ public class LedgerUtils {
      */
     public static void createWarehouse(Context ctx, Object entry) throws Exception {
         Warehouse warehouse = entry instanceof String ? ParseUtils.parseWarehouse((String) entry) : (Warehouse) entry;
-        //Warehouse warehouse = ParseUtils.parseWarehouse(string);
+        
         LedgerUtils.createEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(warehouse.w_id)}, entry);
     }
 
@@ -207,16 +209,13 @@ public class LedgerUtils {
      * @return The retrieved warehouse.
      */
     public static Warehouse getWarehouse(Context ctx, int w_id) throws Exception{
-
-        //String[] entry1 = LedgerUtils.getEntry(ctx, TABLES.WAREHOUSE, new String[]{String.format("%03d", w_id)});
-
         String entry = LedgerUtils.getEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(w_id)});
 
         if (entry == null) {
             throw new Exception("Could not retrieve Warehouse(" + w_id + ")");
         }
-        //return entry != null ? ParseUtils.parseWarehouse(entry) : null;
-        return ParseUtils.parseWarehouse(entry.toString());
+        return entry != null ? ParseUtils.parseWarehouse(entry) : null;
+        //return ParseUtils.parseWarehouse(entry);
     }
 
     /**
