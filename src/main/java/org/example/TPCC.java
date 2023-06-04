@@ -57,98 +57,24 @@ public class TPCC implements ContractInterface {
     public  TPCC() {
 
     }
-    // public void addTxInfo(Context ctx) {
-    //     ctx.getTxInfo().tx_id = ctx.getStub().getTxId();
-    //     ctx.getTxInfo().cc_start_time_epoch_ms = System.currentTimeMillis();
-    //     ctx.getTxInfo().cc_end_time_epoch_ms = 0;
-    //     ctx.getTxInfo().cc_duration_ms = 0;
-    //     ctx.getTxInfo().stat_get_cnt = 0;
-    //     ctx.getTxInfo().stat_get_size_bytes = 0;
-    //     ctx.getTxInfo().stat_get_exec_total_ms = 0;
-    //     ctx.getTxInfo().stat_put_cnt = 0;
-    //     ctx.getTxInfo().stat_put_size_bytes = 0;
-    //     ctx.getTxInfo().stat_put_exec_total_ms = 0;
-    //     ctx.getTxInfo().stat_del_cnt = 0;
-    //     ctx.getTxInfo().stat_del_exec_total_ms = 0;
-    //     ctx.getTxInfo().stat_iterate_cnt = 0;
-    //     ctx.getTxInfo().stat_iterate_size_bytes = 0;
-    //     ctx.getTxInfo().stat_iterate_exec_total_ms = 0;
-    //     ctx.getTxInfo().md_tpcc_delivery_skipped = 0;
-    //     ctx.getTxInfo().md_tpcc_delivery_total_order_lines = 0;
-    //     ctx.getTxInfo().md_tpcc_order_status_order_lines = 0;
-    //     ctx.getTxInfo().md_tpcc_stock_level_recent_items = 0;
-    // }
-    
-    // public void finishTx(Context ctx) {
-    //     ctx.getTxInfo().cc_end_time_epoch_ms = new Date().getTime();
-    //     ctx.getTxInfo().cc_duration_ms = ctx.getTxInfo().cc_end_time_epoch_ms - ctx.getTxInfo().cc_start_time_epoch_ms;
-    
-    //     System.out.println(new Date().toInstant().toString() + " | info | txinfo | " + JSON.stringify(ctx.getTxInfo()));
-    // }
 
-    // @Transaction
-    //  /**
-    //  * Creates a new entry during the loading phase of the benchmark.
-    //  * @param ctx The TX context.
-    //  * @param parameters The JSON encoded array of entries.
-    //  * @
-    //  */
-    // public void createEntries(Context ctx, String parameters) {
-    //     //addTxInfo(ctx);        
-
-    //     JSONObject params = new JSONObject(parameters);
-        
-    //     JSONArray entryList = params.getJSONArray("entries");
-
-    //     //log("Starting Create Entries TX for " + entryList.length + "entries", ctx, "info");
-
-    //     try {
-    //         for (int i = 0; i < entryList.length(); i++) {
-    //             JSONObject entry = entryList.getJSONObject(i);
-
-    //             switch (entry.getString("table")) {
-    //                 case common.TABLES.WAREHOUSE:
-    //                     LedgerUtils.createWarehouse(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.DISTRICT:
-    //                     LedgerUtils.createDistrict(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.CUSTOMER:
-    //                     LedgerUtils.createCustomer(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.HISTORY:
-    //                     LedgerUtils.createHistory(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.NEW_ORDER:
-    //                     LedgerUtils.createNewOrder(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.ORDERS:
-    //                     LedgerUtils.createOrder(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.ORDER_LINE:
-    //                     LedgerUtils.createOrderLine(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.ITEM:
-    //                     LedgerUtils.createItem(ctx, entry.getString("data"));
-    //                     break;
-    //                 case common.TABLES.STOCK:
-    //                     LedgerUtils.createStock(ctx, entry.getString("data"));
-    //                     break;
-    //                 default:
-    //                     throw new Exception("Unknown record type: " + entry.getString("table"));
-    //             }
-    //         }
-
-    //         // log('Finished Create Entries TX', ctx, 'info');
-    //     } 
-    //     catch (Exception err) {
-    //         common.log(err.toString(), ctx, "error");
-    //     } 
-    // }
+    //creating entries.
 
     @Transaction
-    public void createWarehouseEntry(Context ctx, Warehouse warehouse){
+    public void createWarehouseEntry(Context ctx,int w_id, String w_name, String w_street_1, 
+    String w_street_2, String w_city, String w_state, String w_zip, int w_tax, int w_ytd ){
          try {            
+            Warehouse warehouse = new Warehouse();
+            warehouse.w_id = w_id;
+            warehouse.w_name = w_name;
+            warehouse.w_street_1 = w_street_1;
+            warehouse.w_street_2 = w_street_2;
+            warehouse.w_city = w_city;
+            warehouse.w_state = w_state;
+            warehouse.w_zip = w_zip;
+            warehouse.w_tax = w_tax;
+            warehouse.w_ytd = w_ytd;
+
             LedgerUtils.createWarehouse(ctx, warehouse);
         } catch (Exception e) {            
             common.log(e.toString(), ctx, "error");
@@ -157,9 +83,24 @@ public class TPCC implements ContractInterface {
     }
 
     @Transaction
-    public void createDistrictEntry(Context ctx, District district){
+    public void createDistrictEntry(Context ctx, int d_id, int d_w_id, String d_name, 
+    String d_street_1, String d_street_2, String d_city, String d_state, 
+    String d_zip, int d_tax, int d_ytd, int d_next_o_id){
         try {
-           LedgerUtils.createDistrict(ctx, district);
+            District district = new District();
+            district.d_id = d_id;
+            district.d_w_id = d_w_id;
+            district.d_name = d_name;
+            district.d_street_1 = d_street_1;
+            district.d_street_2 = d_street_2;
+            district.d_city = d_city;
+            district.d_state = d_state;
+            district.d_zip = d_zip;
+            district.d_tax = d_tax;
+            district.d_ytd = d_ytd;
+            district.d_next_o_id = d_next_o_id;
+
+            LedgerUtils.createDistrict(ctx, district);
        } catch (Exception e) {            
            common.log(e.toString(), ctx, "error");
        }
@@ -167,8 +108,16 @@ public class TPCC implements ContractInterface {
     }
 
     @Transaction
-    public void createCustomerEntry(Context ctx, Customer customer){
+    public void createCustomerEntry(Context ctx, int c_id, int c_d_id, int c_w_id, 
+    String c_first, String c_middle, String c_last, String c_street_1, String c_street_2, 
+    String c_city, String c_state, String c_zip, String c_phone, 
+    String c_since, String c_credit, Double c_credit_lim, Double c_discount,
+    Double c_balance, int c_ytd_payment, int c_payment_cnt, int c_delivery_cnt, String c_data){
         try {
+            Customer customer = new Customer(c_id, c_d_id, c_w_id, c_first, c_middle, c_last, 
+            c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit, 
+            c_credit_lim, c_discount, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data);
+
             LedgerUtils.createCustomer(ctx, customer);
         } catch (Exception e) {            
             common.log(e.toString(), ctx, "error");
@@ -176,50 +125,59 @@ public class TPCC implements ContractInterface {
 
     }
 
-    @Transaction
-    public void createHistoryEntry(Context ctx, History history){
-        try {
-            LedgerUtils.createHistory(ctx, history);
-        } catch (Exception e) {            
-            common.log(e.toString(), ctx, "error");
-        }
+    // @Transaction
+    // public void createHistoryEntry(Context ctx, History history){
+    //     try {
+    //         LedgerUtils.createHistory(ctx, history);
+    //     } catch (Exception e) {            
+    //         common.log(e.toString(), ctx, "error");
+    //     }
     
-    }
+    // }
+
+    // @Transaction
+    // public void createNewOrderEntry(Context ctx, NewOrder newOrder){
+    //     try {
+    //         LedgerUtils.createNewOrder(ctx, newOrder);
+    //     } catch (Exception e) {            
+    //         common.log(e.toString(), ctx, "error");
+    //     }
+    
+    // }
+
+    // @Transaction
+    // public void createOrderEntry(Context ctx, Order order){
+    //     try {
+    //         LedgerUtils.createOrder(ctx, order);
+    //     } catch (Exception e) {            
+    //         common.log(e.toString(), ctx, "error");
+    //     }
+    
+    // }
+
+    // @Transaction
+    // public void createOrderLineEntry(Context ctx, OrderLine ol){
+    //     try {
+    //         LedgerUtils.createOrderLine(ctx, ol);
+    //     } catch (Exception e) {            
+    //         common.log(e.toString(), ctx, "error");
+    //     }
+    
+    // }
 
     @Transaction
-    public void createNewOrderEntry(Context ctx, NewOrder newOrder){
+    public void createItemEntry(Context ctx, int i_id, int i_im_id, String i_name, 
+            Double i_price, String i_data){
         try {
-            LedgerUtils.createNewOrder(ctx, newOrder);
-        } catch (Exception e) {            
-            common.log(e.toString(), ctx, "error");
-        }
-    
-    }
+            Item item = new Item();
+            item.i_id = i_id;
+            item.i_im_id = i_im_id;
+            item.i_name = i_name;
+            item.i_price = i_price;
+            item.i_data = i_data;
 
-    @Transaction
-    public void createOrderEntry(Context ctx, Order order){
-        try {
-            LedgerUtils.createOrder(ctx, order);
-        } catch (Exception e) {            
-            common.log(e.toString(), ctx, "error");
-        }
-    
-    }
-
-    @Transaction
-    public void createOrderLineEntry(Context ctx, OrderLine ol){
-        try {
-            LedgerUtils.createOrderLine(ctx, ol);
-        } catch (Exception e) {            
-            common.log(e.toString(), ctx, "error");
-        }
-    
-    }
-
-    @Transaction
-    public void createItemEntry(Context ctx, Item item){
-        try {
             LedgerUtils.createItem(ctx, item);
+            return;
         } catch (Exception e) {            
             common.log(e.toString(), ctx, "error");
         }
@@ -227,8 +185,16 @@ public class TPCC implements ContractInterface {
     }
 
     @Transaction
-    public void createStockEntry(Context ctx, Stock stock){
+    public void createStockEntry(Context ctx, int s_i_id, int s_w_id, int s_quantity, 
+    String s_dist_01, String s_dist_02, String s_dist_03, String s_dist_04, 
+    String s_dist_05, String s_dist_06, String s_dist_07, String s_dist_08, 
+    String s_dist_09, String s_dist_10, int s_ytd, int s_order_cnt, int s_remote_cnt, 
+    String s_data){
         try {
+            Stock stock = new Stock(s_i_id, s_w_id, s_quantity, s_dist_01, s_dist_02, 
+            s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09,
+            s_dist_10, s_ytd, s_order_cnt, s_remote_cnt, s_data);
+
             LedgerUtils.createStock(ctx, stock);
         } catch (Exception e) {            
             common.log(e.toString(), ctx, "error");
@@ -367,7 +333,7 @@ public class TPCC implements ContractInterface {
                 newOrder.no_d_id = district.d_id;
                 newOrder.no_w_id = warehouse.w_id;
             
-            LedgerUtils.createNewOrder(ctx, newOrder.toString());
+            LedgerUtils.createNewOrder(ctx, newOrder);
 
             boolean allItemsLocal = Arrays.stream(params.i_w_ids).allMatch(i_w_id -> i_w_id == warehouse.w_id);
                         
@@ -381,7 +347,7 @@ public class TPCC implements ContractInterface {
                 order.o_ol_cnt = params.i_ids.length;
                 order.o_all_local = allItemsLocal ? 1 : 0;
             
-            LedgerUtils.createOrder(ctx, order.toString());
+            LedgerUtils.createOrder(ctx, order);
 
             List<ItemsData> itemsData = new ArrayList<>();
 
@@ -489,7 +455,7 @@ public class TPCC implements ContractInterface {
                 orderLine.ol_amount = orderLineAmount;
                 orderLine.ol_dist_info = ("s_dist_" + stockDistrictId);
                 
-                LedgerUtils.createOrderLine(ctx, orderLine.toString());
+                LedgerUtils.createOrderLine(ctx, orderLine);
 
                 // 2.4.3.3 The emulated terminal must display, in the appropriate fields of
                 // the input/ output screen, all input data and the output data resulting
@@ -698,7 +664,7 @@ public class TPCC implements ContractInterface {
                 history.h_amount= params.h_amount;
                 history.h_data= h_data;
             
-            LedgerUtils.createHistory(ctx, history.toString());
+            LedgerUtils.createHistory(ctx, history);
 
             // 2.5.3.3 The emulated terminal must display, in the appropriate fields of the
             // input/output screen, all input data and the output data resulting from the
