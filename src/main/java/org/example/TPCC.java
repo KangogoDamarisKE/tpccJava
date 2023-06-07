@@ -22,48 +22,55 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.Contact;
 import org.hyperledger.fabric.contract.annotation.Contract;
 import org.hyperledger.fabric.contract.annotation.Default;
-//import org.json.JSONArray;
+
 import org.json.JSONObject;
+
 import org.hyperledger.fabric.contract.annotation.Info;
 import org.hyperledger.fabric.contract.annotation.License;
 import org.hyperledger.fabric.contract.annotation.Transaction;
 
-
-@Contract(name = "TPCC",
-    info = @Info(title = "tpcc contract",
-                description = "My Smart Contract",
-                version = "0.0.1",
-                license =
-                        @License(name = "Apache-2.0",
-                                url = ""),
-                                contact =  @Contact(email = "tpcc@example.com",
-                                                name = "tpcc",
-                                                url = "http://tpcc.me")))
+@Contract(name = "TPCC", info = @Info(title = "tpcc contract", description = "My Smart Contract", version = "0.0.1", license = @License(name = "Apache-2.0", url = ""), contact = @Contact(email = "tpcc@example.com", name = "tpcc", url = "http://tpcc.me")))
 
 /**
- * The implementation of the TPC-C benchmark smart contract according to the specification version v5.11.0.
+ * The implementation of the TPC-C benchmark smart contract according to the
+ * specification version v5.11.0.
  */
 
 @Default
 public class TPCC implements ContractInterface {
 
-
-    public  TPCC() {
+    public TPCC() {
 
     }
 
-    //creating entries.
+    // creating entries.
+    @Transaction()
+    public void createEnties(Context ctx) throws Exception {
+        // ChaincodeStub stub = ctx.getStub();
+
+        String[] warehouseData = {
+            "{\n    \"w_id\": \"001\" , \"w_name\": \"HQ\" , \"w_street_1\": \"1034\" , \"w_street_2\": \"30\" , \n    \"w_city\": \"Budapest\" , \"w_state\": \"Budaosh\" , \"w_zip\": \"+30\" , \n    \"w_tax\": \"1020\" , \"w_ytd\": \"2023\" \n}",
+            "{\n    \"w_id\": \"002\" , \"w_name\": \"branch1\" , \"w_street_1\": \"1035\" , \"w_street_2\": \"31\" , \n    \"w_city\": \"Budapest\" , \"w_state\": \"Buda\" , \"w_zip\": \"+31\" , \n    \"w_tax\": \"1120\" , \"w_ytd\": \"2023\" \n}",
+            "{\n    \"w_id\": \"003\" , \"w_name\": \"branch2\" , \"w_street_1\": \"1036\" , \"w_street_2\": \"32\" , \n    \"w_city\": \"Budapest\" , \"w_state\": \"pest\" , \"w_zip\": \"+32\" , \n    \"w_tax\": \"1220\" , \"w_ytd\": \"2023\" \n}"
+        };
+
+        for (int i = 0; i < warehouseData.length; i++) {
+            Warehouse warehouse= new Warehouse();
+            LedgerUtils.createWarehouse(ctx, warehouse);
+            System.out.printf("innit warehouse");
+            common.log("init", ctx, null);
+        }
+    }
 
     @Transaction
-    public void createWarehouseEntry(Context ctx,int w_id, String w_name, String w_street_1, 
-    String w_street_2, String w_city, String w_state, String w_zip, int w_tax, int w_ytd ){
-         try {            
+    public void createWarehouseEntry(Context ctx, int w_id, String w_name, String w_street_1,
+            String w_street_2, String w_city, String w_state, String w_zip, int w_tax, int w_ytd) {
+        try {
             Warehouse warehouse = new Warehouse();
             warehouse.w_id = w_id;
             warehouse.w_name = w_name;
@@ -76,16 +83,24 @@ public class TPCC implements ContractInterface {
             warehouse.w_ytd = w_ytd;
 
             LedgerUtils.createWarehouse(ctx, warehouse);
-        } catch (Exception e) {            
+            System.out.println("warehouse created" + w_id);
+            common.log("create warehouse complete", ctx, "info");
+        } catch (Exception e) {
             common.log(e.toString(), ctx, "error");
         }
 
     }
 
     @Transaction
-    public void createDistrictEntry(Context ctx, int d_id, int d_w_id, String d_name, 
-    String d_street_1, String d_street_2, String d_city, String d_state, 
-    String d_zip, int d_tax, int d_ytd, int d_next_o_id){
+    public Warehouse readWarehouseEntry(Context ctx, int w_id) throws Exception {
+        Warehouse warehouse = LedgerUtils.getWarehouse(ctx, w_id);
+        return warehouse;
+    }
+
+    @Transaction
+    public void createDistrictEntry(Context ctx, int d_id, int d_w_id, String d_name,
+            String d_street_1, String d_street_2, String d_city, String d_state,
+            String d_zip, int d_tax, int d_ytd, int d_next_o_id) {
         try {
             District district = new District();
             district.d_id = d_id;
@@ -101,73 +116,33 @@ public class TPCC implements ContractInterface {
             district.d_next_o_id = d_next_o_id;
 
             LedgerUtils.createDistrict(ctx, district);
-       } catch (Exception e) {            
-           common.log(e.toString(), ctx, "error");
-       }
-
-    }
-
-    @Transaction
-    public void createCustomerEntry(Context ctx, int c_id, int c_d_id, int c_w_id, 
-    String c_first, String c_middle, String c_last, String c_street_1, String c_street_2, 
-    String c_city, String c_state, String c_zip, String c_phone, 
-    String c_since, String c_credit, Double c_credit_lim, Double c_discount,
-    Double c_balance, int c_ytd_payment, int c_payment_cnt, int c_delivery_cnt, String c_data){
-        try {
-            Customer customer = new Customer(c_id, c_d_id, c_w_id, c_first, c_middle, c_last, 
-            c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit, 
-            c_credit_lim, c_discount, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data);
-
-            LedgerUtils.createCustomer(ctx, customer);
-        } catch (Exception e) {            
+        } catch (Exception e) {
             common.log(e.toString(), ctx, "error");
         }
 
     }
 
-    // @Transaction
-    // public void createHistoryEntry(Context ctx, History history){
-    //     try {
-    //         LedgerUtils.createHistory(ctx, history);
-    //     } catch (Exception e) {            
-    //         common.log(e.toString(), ctx, "error");
-    //     }
-    
-    // }
+    @Transaction
+    public void createCustomerEntry(Context ctx, int c_id, int c_d_id, int c_w_id,
+            String c_first, String c_middle, String c_last, String c_street_1, String c_street_2,
+            String c_city, String c_state, String c_zip, String c_phone,
+            String c_since, String c_credit, Double c_credit_lim, Double c_discount,
+            Double c_balance, int c_ytd_payment, int c_payment_cnt, int c_delivery_cnt, String c_data) {
+        try {
+            Customer customer = new Customer(c_id, c_d_id, c_w_id, c_first, c_middle, c_last,
+                    c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit,
+                    c_credit_lim, c_discount, c_balance, c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data);
 
-    // @Transaction
-    // public void createNewOrderEntry(Context ctx, NewOrder newOrder){
-    //     try {
-    //         LedgerUtils.createNewOrder(ctx, newOrder);
-    //     } catch (Exception e) {            
-    //         common.log(e.toString(), ctx, "error");
-    //     }
-    
-    // }
+            LedgerUtils.createCustomer(ctx, customer);
+        } catch (Exception e) {
+            common.log(e.toString(), ctx, "error");
+        }
 
-    // @Transaction
-    // public void createOrderEntry(Context ctx, Order order){
-    //     try {
-    //         LedgerUtils.createOrder(ctx, order);
-    //     } catch (Exception e) {            
-    //         common.log(e.toString(), ctx, "error");
-    //     }
-    
-    // }
-
-    // @Transaction
-    // public void createOrderLineEntry(Context ctx, OrderLine ol){
-    //     try {
-    //         LedgerUtils.createOrderLine(ctx, ol);
-    //     } catch (Exception e) {            
-    //         common.log(e.toString(), ctx, "error");
-    //     }
-    
-    // }
+    }
 
     @Transaction
-    public void createItemEntry(Context ctx, int i_id, int i_im_id, String i_name, 
-            Double i_price, String i_data){
+    public void createItemEntry(Context ctx, int i_id, int i_im_id, String i_name,
+            Double i_price, String i_data) {
         try {
             Item item = new Item();
             item.i_id = i_id;
@@ -178,84 +153,98 @@ public class TPCC implements ContractInterface {
 
             LedgerUtils.createItem(ctx, item);
             return;
-        } catch (Exception e) {            
+        } catch (Exception e) {
             common.log(e.toString(), ctx, "error");
         }
-    
+
     }
 
     @Transaction
-    public void createStockEntry(Context ctx, int s_i_id, int s_w_id, int s_quantity, 
-    String s_dist_01, String s_dist_02, String s_dist_03, String s_dist_04, 
-    String s_dist_05, String s_dist_06, String s_dist_07, String s_dist_08, 
-    String s_dist_09, String s_dist_10, int s_ytd, int s_order_cnt, int s_remote_cnt, 
-    String s_data){
+    public void createStockEntry(Context ctx, int s_i_id, int s_w_id, int s_quantity,
+            String s_dist_01, String s_dist_02, String s_dist_03, String s_dist_04,
+            String s_dist_05, String s_dist_06, String s_dist_07, String s_dist_08,
+            String s_dist_09, String s_dist_10, int s_ytd, int s_order_cnt, int s_remote_cnt,
+            String s_data) {
         try {
-            Stock stock = new Stock(s_i_id, s_w_id, s_quantity, s_dist_01, s_dist_02, 
-            s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09,
-            s_dist_10, s_ytd, s_order_cnt, s_remote_cnt, s_data);
+            Stock stock = new Stock(s_i_id, s_w_id, s_quantity, s_dist_01, s_dist_02,
+                    s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09,
+                    s_dist_10, s_ytd, s_order_cnt, s_remote_cnt, s_data);
 
             LedgerUtils.createStock(ctx, stock);
-        } catch (Exception e) {            
+        } catch (Exception e) {
             common.log(e.toString(), ctx, "error");
         }
-    
+
     }
-  
+
     @Transaction
     /**
      * Performs the Delivery read-write TX profile.
-     * @param ctx The TX context.
+     * 
+     * @param ctx        The TX context.
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
     public DoDeliveryOutput doDelivery(Context ctx, DeliveryParameters params) {
-        //addTxInfo(ctx);
+        // addTxInfo(ctx);
 
         // TPC-C 2.7.4.2
         // log(`Starting Delivery TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            //final DeliveryParameters params = ParseUtils.parseDeliveryParameters(parameters);
+            // final DeliveryParameters params =
+            // ParseUtils.parseDeliveryParameters(parameters);
 
-            // For a given warehouse number (W_ID), for each of the 10 districts (D_W_ID , D_ID)
+            // For a given warehouse number (W_ID), for each of the 10 districts (D_W_ID ,
+            // D_ID)
             // within that warehouse, and for a given carrier number (O_CARRIER_ID):
-            
+
             int skipped = 0;
 
             List<DeliveredOrder> deliveredOrders = new ArrayList<>();
 
             for (int d_id = 1; d_id <= 10; d_id++) {
-                // The row in the NEW-ORDER table with matching NO_W_ID (equals W_ID) and NO_D_ID
-                // (equals D_ID) and with the lowest NO_O_ID value is selected. This is the oldest
+                // The row in the NEW-ORDER table with matching NO_W_ID (equals W_ID) and
+                // NO_D_ID
+                // (equals D_ID) and with the lowest NO_O_ID value is selected. This is the
+                // oldest
                 // undelivered order of that district. NO_O_ID, the order number, is retrieved.
                 NewOrder newOrder = LedgerUtils.getOldestNewOrder(ctx, params.w_id, d_id);
                 if (newOrder == null) {
                     // If no matching row is found, then the delivery of an order for this district
                     // is skipped. The condition in which no outstanding order is present at a given
-                    // district must be handled by skipping the delivery of an order for that district
-                    // only and resuming the delivery of an order from all remaining districts of the
-                    // selected warehouse. If this condition occurs in more than 1%, or in more than one,
+                    // district must be handled by skipping the delivery of an order for that
+                    // district
+                    // only and resuming the delivery of an order from all remaining districts of
+                    // the
+                    // selected warehouse. If this condition occurs in more than 1%, or in more than
+                    // one,
                     // whichever is greater, of the business transactions, it must be reported.
-                    common.log("Could not find new order for District( " + params.w_id + "," + d_id + " ) skipping it" , ctx, "info");
+                    common.log("Could not find new order for District( " + params.w_id + "," + d_id + " ) skipping it",
+                            ctx, "info");
                     skipped += 1;
                     continue;
                 }
 
                 LedgerUtils.deleteNewOrder(ctx, newOrder);
 
-                // The row in the ORDER table with matching O_W_ID (equals W_ ID), O_D_ID (equals D_ID),
-                // and O_ID (equals NO_O_ID) is selected, O_C_ID, the customer number, is retrieved,
+                // The row in the ORDER table with matching O_W_ID (equals W_ ID), O_D_ID
+                // (equals D_ID),
+                // and O_ID (equals NO_O_ID) is selected, O_C_ID, the customer number, is
+                // retrieved,
                 // and O_CARRIER_ID is updated.
                 Order order = LedgerUtils.getOrder(ctx, params.w_id, d_id, newOrder.no_o_id);
                 order.o_carrier_id = params.o_carrier_id;
                 LedgerUtils.updateOrder(ctx, order);
 
-                // All rows in the ORDER-LINE table with matching OL_W_ID (equals O_W_ID), OL_D_ID
-                // (equals O_D_ID), and OL_O_ID (equals O_ID) are selected. All OL_DELIVERY_D, the
-                // delivery dates, are updated to the current system time as returned by the operating
+                // All rows in the ORDER-LINE table with matching OL_W_ID (equals O_W_ID),
+                // OL_D_ID
+                // (equals O_D_ID), and OL_O_ID (equals O_ID) are selected. All OL_DELIVERY_D,
+                // the
+                // delivery dates, are updated to the current system time as returned by the
+                // operating
                 // system and the sum of all OL_AMOUNT is retrieved.
                 Double orderLineAmountTotal = 0.0;
-                //ctx.getTxinfo().md_tpcc_delivery_total_order_lines += order.o_ol_cnt;
+                // ctx.getTxinfo().md_tpcc_delivery_total_order_lines += order.o_ol_cnt;
 
                 for (int i = 1; i <= order.o_ol_cnt; i++) {
                     OrderLine orderLine = LedgerUtils.getOrderLine(ctx, params.w_id, d_id, order.o_id, i);
@@ -266,15 +255,15 @@ public class TPCC implements ContractInterface {
                 }
 
                 // The row in the CUSTOMER table with matching C_W_ID (equals W_ID), C_D_ID
-                // (equals D_ID), and C_ID (equals O_C_ID) is selected and C_BALANCE is increased by
-                // the sum of all order-line amounts (OL_AMOUNT) previously retrieved. C_DELIVERY_CNT
+                // (equals D_ID), and C_ID (equals O_C_ID) is selected and C_BALANCE is
+                // increased by
+                // the sum of all order-line amounts (OL_AMOUNT) previously retrieved.
+                // C_DELIVERY_CNT
                 // is incremented by 1.
                 Customer customer = LedgerUtils.getCustomer(ctx, params.w_id, d_id, order.o_c_id);
                 customer.c_balance += orderLineAmountTotal;
                 customer.c_delivery_cnt += 1;
                 LedgerUtils.updateCustomer(ctx, customer);
-
-                
 
                 deliveredOrders.add(new DeliveredOrder(d_id, order.o_id));
 
@@ -282,29 +271,30 @@ public class TPCC implements ContractInterface {
 
             DoDeliveryOutput output = new DoDeliveryOutput(params.w_id, params.o_carrier_id, deliveredOrders, skipped);
 
-
             return output;
-        } 
-        catch (Exception err) {
+        } catch (Exception err) {
             common.log(err.toString(), ctx, "error");
         }
         return null;
     }
-    
+
     @Transaction
     /**
      * Performs the New Order read-write TX profile.
-     * @param ctx The TX context.
+     * 
+     * @param ctx        The TX context.
      * @param parameters The JSON encoded parameters of the TX profile.
-     * @return {Promise<{object}>} The JSON encoded query results according to the specification.
+     * @return {Promise<{object}>} The JSON encoded query results according to the
+     *         specification.
      */
     public DoNewOrderOutput doNewOrder(Context ctx, NewOrderParameters params) {
-        //addTxInfo(ctx);
+        // addTxInfo(ctx);
 
         // TPC-C 2.4.2.2
         // log(`Starting New Order TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            //final NewOrderParameters params = ParseUtils.parseNewOrderParameters(parameters);
+            // final NewOrderParameters params =
+            // ParseUtils.parseNewOrderParameters(parameters);
 
             // The row in the WAREHOUSE table with matching W_ID is selected and W_TAX,
             // the warehouse tax rate, is retrieved.
@@ -328,25 +318,25 @@ public class TPCC implements ContractInterface {
             // If the order includes only home order-lines, then O_ALL_LOCAL is set to 1,
             // otherwise O_ALL_LOCAL is set to 0.
 
-            final NewOrder  newOrder = new NewOrder(); 
-                newOrder.no_o_id = nextOrderId;
-                newOrder.no_d_id = district.d_id;
-                newOrder.no_w_id = warehouse.w_id;
-            
+            final NewOrder newOrder = new NewOrder();
+            newOrder.no_o_id = nextOrderId;
+            newOrder.no_d_id = district.d_id;
+            newOrder.no_w_id = warehouse.w_id;
+
             LedgerUtils.createNewOrder(ctx, newOrder);
 
             boolean allItemsLocal = Arrays.stream(params.i_w_ids).allMatch(i_w_id -> i_w_id == warehouse.w_id);
-                        
-                final Order order = new Order();
-                order.o_id = nextOrderId;
-                order.o_d_id = district.d_id;
-                order.o_w_id = warehouse.w_id;
-                order.o_c_id = customer.c_id;
-                order.o_entry_d = params.o_entry_d;
-                order.o_carrier_id = 0;
-                order.o_ol_cnt = params.i_ids.length;
-                order.o_all_local = allItemsLocal ? 1 : 0;
-            
+
+            final Order order = new Order();
+            order.o_id = nextOrderId;
+            order.o_d_id = district.d_id;
+            order.o_w_id = warehouse.w_id;
+            order.o_c_id = customer.c_id;
+            order.o_entry_d = params.o_entry_d;
+            order.o_carrier_id = 0;
+            order.o_ol_cnt = params.i_ids.length;
+            order.o_all_local = allItemsLocal ? 1 : 0;
+
             LedgerUtils.createOrder(ctx, order);
 
             List<ItemsData> itemsData = new ArrayList<>();
@@ -371,7 +361,7 @@ public class TPCC implements ContractInterface {
                     // terminal must display in the appropriate fields of the input/output
                     // screen the fields: W_ID, D_ID, C_ID, C_LAST, C_CREDIT, O_ID, and the
                     // execution status message "Item number is not valid".
-                    
+
                     HashMap<String, Object> errorOutput = new HashMap<>();
                     errorOutput.put("w_id", warehouse.w_id);
                     errorOutput.put("d_id", district.d_id);
@@ -380,7 +370,7 @@ public class TPCC implements ContractInterface {
                     errorOutput.put("c_credit", customer.c_credit);
                     errorOutput.put("o_id", order.o_id);
                     errorOutput.put("message", "Item number is not valid");
-                    
+
                     // ErrorOutput errorOutput = new ErrorOutput();
                     // errorOutput.w_id = warehouse.w_id;
                     // errorOutput.d_id = district.d_id;
@@ -390,7 +380,7 @@ public class TPCC implements ContractInterface {
                     // errorOutput.o_id= order.o_id;
                     // errorOutput.message= "Item number is not valid'";
 
-                    common.log("Item not found. Error output:" + errorOutput , ctx, "info");
+                    common.log("Item not found. Error output:" + errorOutput, ctx, "info");
                     throw new Exception(new JSONObject(errorOutput).toString());
                 }
 
@@ -406,8 +396,7 @@ public class TPCC implements ContractInterface {
 
                 if (stock.s_quantity >= i_qty + 10) {
                     stock.s_quantity -= i_qty;
-                } 
-                else {
+                } else {
                     stock.s_quantity = (stock.s_quantity - i_qty) + 91;
                 }
 
@@ -441,8 +430,10 @@ public class TPCC implements ContractInterface {
                 // value, and OL_DIST_INFO is set to the content of S_DIST_xx, where xx
                 // represents the district number (OL_D_ID)
                 String stockDistrictId = String.format("%02d", district.d_id);
-                
-                //final OrderLine orderLine = new OrderLine(nextOrderId, district.d_id, warehouse.w_id, i + 1, i_id, i_w_id, null, i_qty, orderLineAmount, "s_dist_" + stockDistrictId);
+
+                // final OrderLine orderLine = new OrderLine(nextOrderId, district.d_id,
+                // warehouse.w_id, i + 1, i_id, i_w_id, null, i_qty, orderLineAmount, "s_dist_"
+                // + stockDistrictId);
                 final OrderLine orderLine = new OrderLine();
                 orderLine.ol_o_id = nextOrderId;
                 orderLine.ol_d_id = district.d_id;
@@ -454,7 +445,7 @@ public class TPCC implements ContractInterface {
                 orderLine.ol_quantity = i_qty;
                 orderLine.ol_amount = orderLineAmount;
                 orderLine.ol_dist_info = ("s_dist_" + stockDistrictId);
-                
+
                 LedgerUtils.createOrderLine(ctx, orderLine);
 
                 // 2.4.3.3 The emulated terminal must display, in the appropriate fields of
@@ -465,9 +456,10 @@ public class TPCC implements ContractInterface {
                 // OL_QUANTITY, S_QUANTITY, brand_generic, I_PRICE, and OL_AMOUNT. The group
                 // is repeated O_OL_CNT times (once per item in the order), equal to the
                 // computed value of ol_cnt.
-                
-                itemsData.add(new ItemsData(orderLine.ol_supply_w_id, orderLine.ol_i_id, item.i_name, orderLine.ol_quantity, stock.s_quantity, 
-                brandGeneric, item.i_price, orderLine.ol_amount));
+
+                itemsData.add(new ItemsData(orderLine.ol_supply_w_id, orderLine.ol_i_id, item.i_name,
+                        orderLine.ol_quantity, stock.s_quantity,
+                        brandGeneric, item.i_price, orderLine.ol_amount));
                 // itemsData.add("ol_supply_w_id", orderLine.ol_supply_w_id);
                 // itemsData.add("ol_i_id", orderLine.ol_i_id);
                 // itemsData.add("i_name", item.i_name);
@@ -478,11 +470,10 @@ public class TPCC implements ContractInterface {
                 // itemsData.add("ol_amount", orderLine.ol_amount);
             }
 
-
-
             // The total-amount for the complete order is computed as:
             // sum(OL_AMOUNT) * (1 - C_DISCOUNT) * (1 + W_TAX + D_TAX)
-            Double  totalAmount = totalOrderLineAmount * (1 - customer.c_discount) * (1 + warehouse.w_tax + district.d_tax);
+            Double totalAmount = totalOrderLineAmount * (1 - customer.c_discount)
+                    * (1 + warehouse.w_tax + district.d_tax);
 
             // 2.4.3.3 The emulated terminal must display, in the appropriate fields of
             // the input/ output screen, all input data and the output data resulting
@@ -493,27 +484,26 @@ public class TPCC implements ContractInterface {
             // optional execution status message other than "Item number is not valid".
 
             DoNewOrderOutput output = new DoNewOrderOutput();
-            output.w_id= warehouse.w_id;
-            output.d_id= district.d_id;
-            output.c_id= customer.c_id;
-            output.c_last= customer.c_last;
-            output.c_credit= customer.c_credit;
+            output.w_id = warehouse.w_id;
+            output.d_id = district.d_id;
+            output.c_id = customer.c_id;
+            output.c_last = customer.c_last;
+            output.c_credit = customer.c_credit;
             output.c_discount = customer.c_discount;
             output.w_tax = warehouse.w_tax;
-            output.d_tax= district.d_tax;
-            output.o_ol_cnt= order.o_ol_cnt;
-            output.o_id= order.o_id;
-            output.o_entry_d= order.o_entry_d;
-            output.total_amount= totalAmount;
+            output.d_tax = district.d_tax;
+            output.o_ol_cnt = order.o_ol_cnt;
+            output.o_id = order.o_id;
+            output.o_entry_d = order.o_entry_d;
+            output.total_amount = totalAmount;
             output.items = itemsData;
 
-
-
-            // log(`Finished New Order TX with output: ${JSON.stringify(output)}`, ctx, 'info');
+            // log(`Finished New Order TX with output: ${JSON.stringify(output)}`, ctx,
+            // 'info');
             return output;
         } catch (Exception err) {
             common.log(err.toString(), ctx, "error");
-            //throw err;
+            // throw err;
         }
         return null;
     }
@@ -521,7 +511,8 @@ public class TPCC implements ContractInterface {
     @Transaction
     /**
      * Performs the Order Status read TX profile.
-     * @param ctx The TX context.
+     * 
+     * @param ctx        The TX context.
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
@@ -529,62 +520,73 @@ public class TPCC implements ContractInterface {
         // TPC-C 2.6.2.2
         // log(`Starting Order Status TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            //final OrderStatusParameters params = ParseUtils.parseOrderStatusParameters(parameters);
+            // final OrderStatusParameters params =
+            // ParseUtils.parseOrderStatusParameters(parameters);
 
-            Customer customer = LedgerUtils.getCustomersByIdOrLastName(ctx, params.w_id, params.d_id, params.c_id, params.c_last);
+            Customer customer = LedgerUtils.getCustomersByIdOrLastName(ctx, params.w_id, params.d_id, params.c_id,
+                    params.c_last);
 
-            // The row in the ORDER table with matching O_W_ID (equals C_W_ID), O_D_ID (equals C_D_ID),
-            // O_C_ID (equals C_ID), and with the largest existing O_ID, is selected. This is the most
-            // recent order placed by that customer. O_ID, O_ENTRY_D, and O_CARRIER_ID are retrieved.
+            // The row in the ORDER table with matching O_W_ID (equals C_W_ID), O_D_ID
+            // (equals C_D_ID),
+            // O_C_ID (equals C_ID), and with the largest existing O_ID, is selected. This
+            // is the most
+            // recent order placed by that customer. O_ID, O_ENTRY_D, and O_CARRIER_ID are
+            // retrieved.
             Order order = LedgerUtils.getLastOrderOfCustomer(ctx, customer.c_w_id, customer.c_d_id, customer.c_id);
 
-            // All rows in the ORDER-LINE table with matching OL_W_ID (equals O_W_ID), OL_D_ID (equals
-            // O_D_ID), and OL_O_ID (equals O_ID) are selected and the corresponding sets of OL_I_ID,
+            // All rows in the ORDER-LINE table with matching OL_W_ID (equals O_W_ID),
+            // OL_D_ID (equals
+            // O_D_ID), and OL_O_ID (equals O_ID) are selected and the corresponding sets of
+            // OL_I_ID,
             // OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, and OL_DELIVERY_D are retrieved.
-            //ctx.txinfo.md_tpcc_order_status_order_lines = order.o_ol_cnt;
+            // ctx.txinfo.md_tpcc_order_status_order_lines = order.o_ol_cnt;
 
             List<OrderLineData> orderLineData = new ArrayList<>();
             for (int i = 1; i <= order.o_ol_cnt; i++) {
                 OrderLine orderLine = LedgerUtils.getOrderLine(ctx, order.o_w_id, order.o_d_id, order.o_id, i);
-                
-                orderLineData.add(new OrderLineData(orderLine.ol_supply_w_id, orderLine.ol_i_id, 
-                orderLine.ol_quantity, orderLine.ol_amount, orderLine.ol_delivery_d));
+
+                orderLineData.add(new OrderLineData(orderLine.ol_supply_w_id, orderLine.ol_i_id,
+                        orderLine.ol_quantity, orderLine.ol_amount, orderLine.ol_delivery_d));
                 // orderLineData.add("ol_supply_w_id", orderLine.ol_supply_w_id);
                 // orderLineData.add("ol_i_id", orderLine.ol_i_id);
                 // orderLineData.add("ol_quantity", orderLine.ol_quantity);
                 // orderLineData.add("ol_amount", orderLine.ol_amount);
-                // orderLineData.add("ol_delivery_d", orderLine.ol_delivery_d);                
-                
+                // orderLineData.add("ol_delivery_d", orderLine.ol_delivery_d);
+
             }
 
-            // 2.6.3.3 The emulated terminal must display, in the appropriate fields of the input/output
-            // screen, all input data and the output data resulting from the execution of the
+            // 2.6.3.3 The emulated terminal must display, in the appropriate fields of the
+            // input/output
+            // screen, all input data and the output data resulting from the execution of
+            // the
             // transaction. The display fields are divided in two groups as follows:
-            // - One non-repeating group of fields: W_ID, D_ID, C_ID, C_FIRST, C_MIDDLE, C_LAST,
-            //   C_BALANCE, O_ID, O_ENTRY_D, and O_CARRIER_ID;
-            // - One repeating group of fields: OL_SUPPLY_W_ID, OL_I_ID, OL_QUANTITY, OL_AMOUNT, and
-            //   OL_DELIVERY_D. The group is repeated O_OL_CNT times (once per item in the order).
+            // - One non-repeating group of fields: W_ID, D_ID, C_ID, C_FIRST, C_MIDDLE,
+            // C_LAST,
+            // C_BALANCE, O_ID, O_ENTRY_D, and O_CARRIER_ID;
+            // - One repeating group of fields: OL_SUPPLY_W_ID, OL_I_ID, OL_QUANTITY,
+            // OL_AMOUNT, and
+            // OL_DELIVERY_D. The group is repeated O_OL_CNT times (once per item in the
+            // order).
 
             DoOrderStatusOutput output = new DoOrderStatusOutput();
-            output.w_id= params.w_id;
-            output.d_id= params.d_id;
-            output.c_id= customer.c_id;
+            output.w_id = params.w_id;
+            output.d_id = params.d_id;
+            output.c_id = customer.c_id;
             output.c_first = customer.c_first;
             output.c_middle = customer.c_middle;
-            output.c_last= customer.c_last;
+            output.c_last = customer.c_last;
             output.c_balance = customer.c_balance;
-            output.o_id= order.o_id;
-            output.o_entry_d= order.o_entry_d;
-            output.o_carrier_id= order.o_carrier_id;
-            output.order_lines= orderLineData;
+            output.o_id = order.o_id;
+            output.o_entry_d = order.o_entry_d;
+            output.o_carrier_id = order.o_carrier_id;
+            output.order_lines = orderLineData;
 
-
-            // log(`Finished Order Status TX with output: ${JSON.stringify(output)}`, ctx, 'info');
+            // log(`Finished Order Status TX with output: ${JSON.stringify(output)}`, ctx,
+            // 'info');
             return output;
-        }
-        catch (Exception err) {
+        } catch (Exception err) {
             common.log(err.toString(), ctx, "error");
-            //throw err;
+            // throw err;
         }
         return null;
     }
@@ -592,20 +594,22 @@ public class TPCC implements ContractInterface {
     @Transaction
     /**
      * Performs the Payment read-write TX profile.
-     * @param ctx The TX context.
+     * 
+     * @param ctx        The TX context.
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
     public DoPaymentOutput doPayment(Context ctx, PaymentParameters params) {
-        //addTxInfo(ctx);
+        // addTxInfo(ctx);
 
         // TPC-C 2.5.2.2
         // log(`Starting Payment TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            //PaymentParameters params = ParseUtils.parsePaymentParameters(parameters);
+            // PaymentParameters params = ParseUtils.parsePaymentParameters(parameters);
 
             // The row in the WAREHOUSE table with matching W_ID is selected. W_NAME,
-            // W_STREET_1, W_STREET_2, W_CITY, W_STATE, and W_ZIP are retrieved and W_YTD, the
+            // W_STREET_1, W_STREET_2, W_CITY, W_STATE, and W_ZIP are retrieved and W_YTD,
+            // the
             // warehouse's year-to-date balance, is increased by H_ AMOUNT.
             Warehouse warehouse = LedgerUtils.getWarehouse(ctx, params.w_id);
             warehouse.w_ytd += params.h_amount;
@@ -618,7 +622,8 @@ public class TPCC implements ContractInterface {
             district.d_ytd += params.h_amount;
             LedgerUtils.updateDistrict(ctx, district);
 
-            Customer customer = LedgerUtils.getCustomersByIdOrLastName(ctx, warehouse.w_id, district.d_id, params.c_id, params.c_last);
+            Customer customer = LedgerUtils.getCustomersByIdOrLastName(ctx, warehouse.w_id, district.d_id, params.c_id,
+                    params.c_last);
 
             // C_BALANCE is decreased by H_AMOUNT. C_YTD_PAYMENT is increased by H_AMOUNT.
             // C_PAYMENT_CNT is incremented by 1.
@@ -628,19 +633,24 @@ public class TPCC implements ContractInterface {
 
             // If the value of C_CREDIT is equal to "BC", then C_DATA is also retrieved from
             // the selected customer and the following history information: C_ID, C_D_ID,
-            // C_W_ID, D_ID, W_ID, and H_AMOUNT, are inserted at the left of the C_DATA field
+            // C_W_ID, D_ID, W_ID, and H_AMOUNT, are inserted at the left of the C_DATA
+            // field
             // by shifting the existing content of C_DATA to the right by an equal number of
-            // bytes and by discarding the bytes that are shifted out of the right side of the
-            // C_DATA field. The content of the C_DATA field never exceeds 500 characters. The
+            // bytes and by discarding the bytes that are shifted out of the right side of
+            // the
+            // C_DATA field. The content of the C_DATA field never exceeds 500 characters.
+            // The
             // selected customer is updated with the new C_DATA field.
             // if (customer.c_credit == "BC") {
-            //     String history = String.join(" ",customer.c_id, customer.c_d_id, customer.c_w_id, district.d_id, warehouse.w_id, params.h_amount);
-            //     customer.c_data = history + '|' + customer.c_data;
-            //     if (customer.c_data.length > 500)
-            //         customer.c_data = customer.c_data.slice(0, 500);
-            //}
+            // String history = String.join(" ",customer.c_id, customer.c_d_id,
+            // customer.c_w_id, district.d_id, warehouse.w_id, params.h_amount);
+            // customer.c_data = history + '|' + customer.c_data;
+            // if (customer.c_data.length > 500)
+            // customer.c_data = customer.c_data.slice(0, 500);
+            // }
             if (customer.c_credit.equals("BC")) {
-                String history = customer.c_id + " " +  customer.c_d_id + " " +  customer.c_w_id + " " +  district.d_id + " " +  warehouse.w_id + " " +  params.h_amount;
+                String history = customer.c_id + " " + customer.c_d_id + " " + customer.c_w_id + " " + district.d_id
+                        + " " + warehouse.w_id + " " + params.h_amount;
                 customer.c_data = history + "|" + customer.c_data;
                 if (customer.c_data.length() > 500)
                     customer.c_data = customer.c_data.substring(0, 500);
@@ -649,21 +659,21 @@ public class TPCC implements ContractInterface {
             LedgerUtils.updateCustomer(ctx, customer);
 
             // H_DATA is built by concatenating W_NAME and D_NAME separated by 4 spaces.
-            //let h_data = warehouse.w_name + ' '.repeat(4) + district.d_name;
+            // let h_data = warehouse.w_name + ' '.repeat(4) + district.d_name;
             String h_data = warehouse.w_name + "    " + district.d_name;
 
             // A new row is inserted into the HISTORY table with H_C_ID = C_ID,
             // H_C_D_ID = C_D_ID, H_C_W_ID = C_W_ID, H_D_ID = D_ID, and H_W_ID = W_ID.
             History history = new History();
-                history.h_c_id = customer.c_id;
-                history.h_c_d_id= customer.c_d_id;
-                history.h_c_w_id= customer.c_w_id;
-                history.h_d_id= district.d_id;
-                history.h_w_id= warehouse.w_id;
-                history.h_date= params.h_date;
-                history.h_amount= params.h_amount;
-                history.h_data= h_data;
-            
+            history.h_c_id = customer.c_id;
+            history.h_c_d_id = customer.c_d_id;
+            history.h_c_w_id = customer.c_w_id;
+            history.h_d_id = district.d_id;
+            history.h_w_id = warehouse.w_id;
+            history.h_date = params.h_date;
+            history.h_amount = params.h_amount;
+            history.h_data = h_data;
+
             LedgerUtils.createHistory(ctx, history);
 
             // 2.5.3.3 The emulated terminal must display, in the appropriate fields of the
@@ -692,9 +702,9 @@ public class TPCC implements ContractInterface {
             output.d_city = district.d_city;
             output.d_state = district.d_state;
             output.d_zip = district.d_zip;
-            output.c_first= customer.c_first;
-            output.c_middle= customer.c_middle;
-            output.c_last= customer.c_last;
+            output.c_first = customer.c_first;
+            output.c_middle = customer.c_middle;
+            output.c_last = customer.c_last;
             output.c_street_1 = customer.c_street_1;
             output.c_street_2 = customer.c_street_2;
             output.c_city = customer.c_city;
@@ -706,18 +716,17 @@ public class TPCC implements ContractInterface {
             output.c_credit_lim = customer.c_credit_lim;
             output.c_discount = customer.c_discount;
             output.c_balance = customer.c_balance;
-            
 
             if (customer.c_credit.equals("BC")) {
                 output.c_data = customer.c_data.substring(0, 200);
             }
 
-            // log(`Finished Payment TX with output: ${JSON.stringify(output)}`, ctx, 'info');
+            // log(`Finished Payment TX with output: ${JSON.stringify(output)}`, ctx,
+            // 'info');
             return output;
-        }
-        catch (Exception err) {
+        } catch (Exception err) {
             common.log(err.toString(), ctx, "error");
-            //throw err;
+            // throw err;
         }
         return null;
     }
@@ -725,33 +734,42 @@ public class TPCC implements ContractInterface {
     @Transaction
     /**
      * Performs the Stock Level read TX profile.
-     * @param ctx The TX context.
+     * 
+     * @param ctx        The TX context.
      * @param parameters The JSON encoded parameters of the TX profile.
      * @return The JSON encoded query results according to the specification.
      */
     public DoStockLevelOutput doStockLevel(Context ctx, StockLevelParameters params) {
-        //addTxInfo(ctx);
+        // addTxInfo(ctx);
 
         // TPC-C 2.8.2.2
         // log(`Starting Stock Level TX with parameters: ${parameters}`, ctx, 'info');
         try {
-            //final StockLevelParameters params = ParseUtils.parseStockLevelParameters(parameters);
+            // final StockLevelParameters params =
+            // ParseUtils.parseStockLevelParameters(parameters);
 
-            // The row in the DISTRICT table with matching D_W_ID and D_ID is selected and D_NEXT_O_ID
+            // The row in the DISTRICT table with matching D_W_ID and D_ID is selected and
+            // D_NEXT_O_ID
             // is retrieved.
             final District district = LedgerUtils.getDistrict(ctx, params.w_id, params.d_id);
 
-            // All rows in the ORDER-LINE table with matching OL_W_ID (equals W_ID), OL_D_ID (equals
-            // D_ID), and OL_O_ID (lower than D_NEXT_O_ID and greater than or equal to D_NEXT_O_ID
-            // minus 20) are selected. They are the items for 20 recent orders of the district.
+            // All rows in the ORDER-LINE table with matching OL_W_ID (equals W_ID), OL_D_ID
+            // (equals
+            // D_ID), and OL_O_ID (lower than D_NEXT_O_ID and greater than or equal to
+            // D_NEXT_O_ID
+            // minus 20) are selected. They are the items for 20 recent orders of the
+            // district.
 
             final int o_id_min = district.d_next_o_id - 20;
             final int o_id_max = district.d_next_o_id;
-            List<Integer> recentItemIds = LedgerUtils.getItemIdsOfRecentOrders(ctx, params.w_id, district.d_id, o_id_min, o_id_max);
-            //ctx.txinfo.md_tpcc_stock_level_recent_items = recentItemIds.length;
+            List<Integer> recentItemIds = LedgerUtils.getItemIdsOfRecentOrders(ctx, params.w_id, district.d_id,
+                    o_id_min, o_id_max);
+            // ctx.txinfo.md_tpcc_stock_level_recent_items = recentItemIds.length;
 
-            // All rows in the STOCK table with matching S_I_ID (equals OL_I_ID) and S_W_ID (equals W_ID)
-            // from the list of distinct item numbers and with S_QUANTITY lower than threshold are counted
+            // All rows in the STOCK table with matching S_I_ID (equals OL_I_ID) and S_W_ID
+            // (equals W_ID)
+            // from the list of distinct item numbers and with S_QUANTITY lower than
+            // threshold are counted
             // (giving low_stock).
             int lowStock = 0;
             for (int i_id : recentItemIds) {
@@ -761,24 +779,26 @@ public class TPCC implements ContractInterface {
                 }
             }
 
-            // 2.8.3.3 The emulated terminal must display, in the appropriate field of the input/
-            // output screen, all input data and the output data which results from the execution of
-            // the transaction. The following fields are displayed: W_ID, D_ID, threshold, and low_stock.
+            // 2.8.3.3 The emulated terminal must display, in the appropriate field of the
+            // input/
+            // output screen, all input data and the output data which results from the
+            // execution of
+            // the transaction. The following fields are displayed: W_ID, D_ID, threshold,
+            // and low_stock.
 
             DoStockLevelOutput output = new DoStockLevelOutput();
-            output.w_id= params.w_id;
-            output.d_id= params.d_id;
-            output.threshold= params.threshold;
-            output.low_stock= lowStock;
+            output.w_id = params.w_id;
+            output.d_id = params.d_id;
+            output.threshold = params.threshold;
+            output.low_stock = lowStock;
 
-
-            // log(`Finished Stock Level TX with output: ${JSON.stringify(output)}`, ctx, 'info');
+            // log(`Finished Stock Level TX with output: ${JSON.stringify(output)}`, ctx,
+            // 'info');
             return output;
 
-        }
-        catch (Exception err) {
+        } catch (Exception err) {
             common.log(err.toString(), ctx, "error");
-            //throw err;
+            // throw err;
         }
         return null;
     }
@@ -786,19 +806,10 @@ public class TPCC implements ContractInterface {
     @Transaction
     /**
      * Initializes the TPC-C chaincode.
+     * 
      * @param ctx The TX context.
      */
     public void instantiate(Context ctx) {
         common.log("Instantiating TPC-C chaincode", ctx, "info");
     }
 }
-
-
-
-
-
-
-
-
-
-
