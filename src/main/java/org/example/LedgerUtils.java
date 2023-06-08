@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * Utility functions for accessing the state database.
@@ -40,6 +41,7 @@ import java.util.function.Function;
 
  @DataType()
 public class LedgerUtils {
+    private static final Logger LOGGER = Logger.getLogger(TPCC.class.getName());
     //private final static Gson gson = new Gson();
 
     /**
@@ -55,21 +57,21 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static void createEntry(Context ctx, String type, String[] keyParts, Object entry) throws Exception {
+        LOGGER.info("Begin createEntry for input " + type + "and " + keyParts);
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
+        LOGGER.info("Created composite key " + key.toString());
 
         String entryString = entry instanceof String ? (String) entry : entry.toString();
-        
+               
         byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
+
+        LOGGER.info("Entry string " + entryString + "and Buffer" + buffer);
 
         //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
-        //final long end = System.currentTimeMillis();
 
-        // ctx.getTxInfo().stat_put_cnt += 1;
-        // ctx.getTxInfo().stat_put_size_bytes += buffer.length;
-        // ctx.getTxInfo().stat_put_exec_total_ms += end - start;
-        // log("Created entry: " + key, ctx);
-        // log("With value: " + entryString, ctx);
+        LOGGER.info("createEntry() Created entry for key " + key + "With value: " + entryString);
+        
     }
 
     /**
@@ -85,16 +87,8 @@ public class LedgerUtils {
         String entryString = entry instanceof String ? (String) entry : entry.toString();
         
         byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
-
-        //final long start = System.currentTimeMillis();
-        ctx.getStub().putState(key.toString(), buffer);
-        //final long end = System.currentTimeMillis();
-
-        // ctx.getTxInfo().stat_put_cnt += 1;
-        // ctx.getTxInfo().stat_put_size_bytes += buffer.length;
-        // ctx.getTxInfo().stat_put_exec_total_ms += end - start;
-        // log("Created entry: " + key, ctx);
-        // log("With value: " + entryString, ctx);
+        
+        ctx.getStub().putState(key.toString(), buffer);        
     }
 
     /**
@@ -106,6 +100,7 @@ public class LedgerUtils {
      */
     public static String getEntry(Context ctx, String type, String[] keyParts) throws Exception {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
+        LOGGER.info("LedgerUtils.getEntry for" + key.toString());
 
         //final long start = System.currentTimeMillis();
         byte[] data = ctx.getStub().getState(key.toString());
@@ -122,6 +117,7 @@ public class LedgerUtils {
             
             // log("Retrieved entry: " + key, ctx);
             // log("With value: " + entry, ctx);
+            LOGGER.info("LedgerUtils.getEntry Retrieved entry " + entry);
             return entry;
         }
         // log("Couldn't find entry: " + key, ctx, "warn");
@@ -197,9 +193,15 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static void createWarehouse(Context ctx, Object entry) throws Exception {
+        LOGGER.info("Starting create warehouse with entry " + entry);
+
         Warehouse warehouse = entry instanceof String ? ParseUtils.parseWarehouse((String) entry) : (Warehouse) entry;
         
+        LOGGER.info("parseWarehouse() returned!!!!");
+
+        LOGGER.info("Call to createEntry() for warehouse");
         LedgerUtils.createEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(warehouse.w_id)}, entry);
+        LOGGER.info("Call to createEntry() for warehouse COMPLETE!!!!");
     }
 
     /**
@@ -209,11 +211,13 @@ public class LedgerUtils {
      * @return The retrieved warehouse.
      */
     public static Warehouse getWarehouse(Context ctx, int w_id) throws Exception{
+        LOGGER.info("LedgerUtils.getWarehouse: Attempt to retrieve warehouse details  for " + w_id);
         String entry = LedgerUtils.getEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(w_id)});
 
         if (entry == null) {
             throw new Exception("Could not retrieve Warehouse(" + w_id + ")");
         }
+        LOGGER.info("LedgerUtils.getWarehouse: retrieved warehouse details  for " + entry.toString());
         return entry != null ? ParseUtils.parseWarehouse(entry) : null;
         //return ParseUtils.parseWarehouse(entry);
     }

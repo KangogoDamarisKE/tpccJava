@@ -17,6 +17,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
+import java.util.logging.Logger;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import com.google.gson.Gson;
 //import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +26,8 @@ import com.google.gson.Gson;
 
 @DataType
 public class ParseUtils {
-    private final static Gson gson = new Gson();    
+    static Gson gson = new Gson();  
+    private static final Logger LOGGER = Logger.getLogger(TPCC.class.getName());  
     //private ObjectMapper objectMapper = new ObjectMapper();
 
    
@@ -91,14 +94,16 @@ public class ParseUtils {
      * @return {Warehouse} The warehouse object.
      */
     public static Warehouse parseWarehouse(String jsonString) {
+        LOGGER.info("Starting parseWarehouse for " + jsonString + "Warehouse parameters");        
         Warehouse warehouseParams = gson.fromJson(jsonString, Warehouse.class);
+        LOGGER.info("parseWarehouse returned " + warehouseParams.toString() + "Warehouse parameters");
         return warehouseParams;
     }
 
         /**
      * Parses the District entry JSON string. (To enable IDE code completion)
-     * @param {string} jsonString The JSON string of the district.
-     * @return {District} The district object.
+     * @param jsonString The JSON string of the district.
+     * @return The district object.
      */
     public static District parseDistrict(String jsonString) {
         District distParams = gson.fromJson(jsonString, District.class);

@@ -8,7 +8,7 @@ public class DoNewOrderOutput {
     public int c_id;
     public String c_last;
     public String c_credit;
-    public Double c_discount;
+    public int c_discount;
     public int w_tax;
     public int d_tax;
     public int o_ol_cnt;

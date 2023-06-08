@@ -29,8 +29,8 @@ public class DoPaymentOutput {
     public String c_phone;
     public String c_since;
     public String c_credit;
-    public Double c_credit_lim;
-    public Double c_discount;
+    public int c_credit_lim;
+    public int c_discount;
     public Double c_balance;
     public String c_data;
 

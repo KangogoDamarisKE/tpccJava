@@ -92,12 +92,12 @@ public class Customer {
 
     @Property()
     //The credit limit of the customer.
-    public Double c_credit_lim;
+    public int c_credit_lim;
 
 
     @Property()
     //The discount for the customer.
-    public Double c_discount;
+    public int c_discount;
 
 
     @Property()
@@ -128,7 +128,7 @@ public class Customer {
     public Customer(int c_id, int c_d_id, int c_w_id, 
     String c_first, String c_middle, String c_last, String c_street_1, String c_street_2, 
     String c_city, String c_state, String c_zip, String c_phone, 
-    String c_since, String c_credit, Double c_credit_lim, Double c_discount,
+    String c_since, String c_credit, int c_credit_lim, int c_discount,
     Double c_balance, int c_ytd_payment, int c_payment_cnt, int c_delivery_cnt, String c_data){
         this.c_id = c_id;
         this.c_d_id =  c_d_id;
