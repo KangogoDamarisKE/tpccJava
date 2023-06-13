@@ -3,7 +3,7 @@
         "transactionName": "createWarehouseEntry",
         "transactionLabel": "A test createWarehouseEntry transaction",
         "arguments": [
-            "{\"w_id\": \"1\" , \"w_name\": \"HQ\" , \"w_street_1\": \"1034\" , \"w_street_2\": \"30\" , \"w_city\": \"Budapest\" , \"w_state\": \"Buda\" , \"w_zip\": \"+30\" , \"w_tax\": \"1020\" , \"w_ytd\": \"2023\" }"
+            "{\"w_id\": 1 , \"w_name\": \"HQ\" , \"w_street_1\": \"1034\" , \"w_street_2\": \"30\" , \"w_city\": \"Budapest\" , \"w_state\": \"Budaosh\" , \"w_zip\": \"+30\" , \"w_tax\": 10 , \"w_ytd\": 10000 }"
         ],
         "transientData": { "key": "value"}
     },
@@ -11,16 +11,24 @@
         "transactionName": "createWarehouseEntry",
         "transactionLabel": "A test createSecondWarehouseEntry transaction",
         "arguments": [
-            "{\"w_id\": \"2\" , \"w_name\": \"branch1\" , \"w_street_1\": \"1035\" , \"w_street_2\": \"31\" , \"w_city\": \"Budapest\" , \"w_state\": \"Pest\" , \"w_zip\": \"+31\" , \"w_tax\": \"1120\" , \"w_ytd\": \"2023\" }"
+            "{\"w_id\": 2 , \"w_name\": \"Branch1\" , \"w_street_1\": \"1024\" , \"w_street_2\": \"39\" , \"w_city\": \"Budapest\" , \"w_state\": \"Buda\" , \"w_zip\": \"+36\" , \"w_tax\": 15 , \"w_ytd\": 10000 }"
         ],
         "transientData": { "key": "value"}
     },
     
     {
-        "transactionName": "createDistrictEntry",
+        "transactionName": "createDistrict1Entry",
         "transactionLabel": "A test createDistrictEntry transaction",
         "arguments": [
-            "{\"d_id\": \"1\", \"d_w_id\" : \"1\", \"d_name\" : \"Duna\", \"d_street_1\" : \"1022\", \"d_street_2\" : \"12\", \"d_city\" : \"Budapest\", \"d_state\" : \"Buda\", \"d_zip\" : \"+30\", \"d_tax\": \"12345\", \"d_ytd\" : \"2023\", \"d_next_o_id\": \"1\"}"
+            "{\"d_id\": 1, \"d_w_id\" : 1, \"d_name\" : \"I\", \"d_street_1\" : \"1022\", \"d_street_2\" : \"12\", \"d_city\" : \"Budapest\", \"d_state\" : \"Buda\", \"d_zip\" : \"+30\", \"d_tax\": 15, \"d_ytd\" : 1000, \"d_next_o_id\": 2}"
+        ],
+        "transientData": { "key": "value"}
+    },
+    {
+        "transactionName": "createDistrictEntry",
+        "transactionLabel": "A test createDistrict2Entry transaction",
+        "arguments": [
+            "{\"d_id\": 2, \"d_w_id\" : 2, \"d_name\" : \"IV\", \"d_street_1\" : \"1322\", \"d_street_2\" : \"17\", \"d_city\" : \"Budapest\", \"d_state\" : \"Pest\", \"d_zip\" : \"+36\", \"d_tax\": 9, \"d_ytd\" : 15000, \"d_next_o_id\": 2}"
         ],
         "transientData": { "key": "value"}
     },
@@ -28,7 +36,7 @@
         "transactionName": "createCustomerEntry",
         "transactionLabel": "A test createFirstCustomerEntry transaction",
         "arguments": [
-            "{\"c_id\" : \"2777\" , \"c_d_id\": \"1\", \"c_w_id\": \"1\", \"c_first\": \"Ann\" , \"c_middle\" : \"Mill\" , \"c_last\": \"Miller\" , \"c_street_1\": \"1022\", \"c_street_2\" : \"12\",\"c_city\" : \"Budapest\", \"c_state\" : \"Buda\", \"c_zip\" : \"+30\",     \"c_phone\" : \"123456\", \"c_since\" : \"10-01-2023\", \"c_credit\" : \"GC\", \"c_credit_lim\" : \"100000.00\",  \"c_discount\" : \"100.00\", \"c_balance\" : \"99000.00\", \"c_ytd_payment\" : \"2023\", \"c_payment_cnt\" : \"15\", \"c_delivery_cnt\" : \"10\", \"c_data\" : \"Good\"}"
+            "{\"c_id\" : 1 , \"c_d_id\": 1, \"c_w_id\": 1, \"c_first\": \"Ann\", \"c_middle\" : \"Mill\" , \"c_last\": \"Miller\" , \"c_street_1\": \"1022\", \"c_street_2\" : \"12\", \"c_city\" : \"Budapest\", \"c_state\" : \"Buda\", \"c_zip\" : \"+30\",     \"c_phone\" : \"123456\", \"c_since\" : \"10-01-2023\", \"c_credit\" : \"GC\", \"c_credit_lim\" : 10000, \"c_discount\" : 100, \"c_balance\" : 9900.00, \"c_ytd_payment\" : 4000, \"c_payment_cnt\" : 10, \"c_delivery_cnt\" : 5, \"c_data\" : \"Good\"}"
         ],
         "transientData": { "key": "value"}
     },
@@ -36,7 +44,7 @@
         "transactionName": "createCustomerEntry",
         "transactionLabel": "A test createSecondCustomerEntry transaction",
         "arguments": [
-            "{\"c_id\" : \"3073\" , \"c_d_id\": \"1\", \"c_w_id\": \"2\", \"c_first\": \"Tom\" , \"c_middle\" : \"Jerry\" , \"c_last\": \"Murfy\" , \"c_street_1\": \"1023\", \"c_street_2\" : \"13\",\"c_city\" : \"Debrecen\", \"c_state\" : \"XYZ\", \"c_zip\" : \"+35\",     \"c_phone\" : \"234567\", \"c_since\" : \"10-02-2023\", \"c_credit\" : \"GC\", \"c_credit_lim\" : \"100000.00\",  \"c_discount\" : \"105.00\", \"c_balance\" : \"95000.00\", \"c_ytd_payment\" : \"2023\", \"c_payment_cnt\" : \"10\", \"c_delivery_cnt\" : \"10\", \"c_data\" : \"Good\"}"
+            "{\"c_id\" : 2 , \"c_d_id\": 1, \"c_w_id\": 1, \"c_first\": \"Aron\", \"c_middle\" : \"Peet\" , \"c_last\": \"Anderson\" , \"c_street_1\": \"3122\", \"c_street_2\" : \"29\", \"c_city\" : \"Miscolc\", \"c_state\" : \"Osh\", \"c_zip\" : \"+35\",     \"c_phone\" : \"7234556\", \"c_since\" : \"01-01-2023\", \"c_credit\" : \"GC\", \"c_credit_lim\" : 100000, \"c_discount\" : 150, \"c_balance\" : 15000.00, \"c_ytd_payment\" : 5000, \"c_payment_cnt\" : 10, \"c_delivery_cnt\" : 15, \"c_data\" : \"Good\"}"
         ],
         "transientData": { "key": "value"}
     },
@@ -61,40 +69,25 @@
         "transactionName": "createOrderEntry",
         "transactionLabel": "A test createOrderEntry transaction",
         "arguments": [
-            "{\"o_id\" : \"1\", \"o_d_id\" : \"1\", \"o_w_id \": \"1\", \"o_c_id\" : \"1\", \"o_entry_d\" : \"10-01-2023\", \"o_carrier_id\" : \"1\", \"o_ol_cnt\" : \"1\", \"o_all_local\" : \"1\"}"
+            "{\"o_id\" : 1, \"o_d_id\" : 1, \"o_w_id \": 1, \"o_c_id\" : 1, \"o_entry_d\" : \"10-01-2023\", \"o_carrier_id\" : 0, \"o_ol_cnt\" : 5, \"o_all_local\" : 1}"
         ],
         "transientData": { "key": "value"}
     },
     {
         "transactionName": "createOrderLineEntry",
-        "transactionLabel": "A test createOrderLineEntry transaction",
+        "transactionLabel": "A test createOrderLine1Entry transaction",
         "arguments": [
-            "{\"ol_o_id\": \"1\" , \"ol_d_id\": \"1\" , \"ol_w_id\": \"1\" , \"ol_number\": \"1\" , \"ol_i_id\": \"1\" , \"ol_supply_w_id\": \"1\" , \"ol_delivery_d\": \"13/01/2023\" , \"ol_quantity\": \"5\" , \"ol_amount\": \"2300.80\" , \"ol_dist_info\": \"district1\"}"
+            "{\"ol_o_id\": 1 , \"ol_d_id\": 1 , \"ol_w_id\": 1, \"ol_number\": 10 , \"ol_i_id\": 1, \"ol_supply_w_id\":1, \"ol_delivery_d\": \"13/01/2023\" , \"ol_quantity\": 5 , \"ol_amount\": 2300.80, \"ol_dist_info\": \"district001\"}"
         ],
         "transientData": { "key": "value"}
     },
-    {
-        "transactionName": "createOrderLineEntry",
-        "transactionLabel": "A test createOrderLineEntry transaction",
-        "arguments": [
-            "{\"ol_o_id\": \"1\" , \"ol_d_id\": \"1\" , \"ol_w_id\": \"1\" , \"ol_number\": \"2\" , \"ol_i_id\": \"2\" , \"ol_supply_w_id\": \"1\" , \"ol_delivery_d\": \"13/01/2023\" , \"ol_quantity\": \"5\" , \"ol_amount\": \"2300.80\" , \"ol_dist_info\": \"district1\"}"
-        ],
-        "transientData": { "key": "value"}
-    },
-    {
-        "transactionName": "createOrderLineEntry",
-        "transactionLabel": "A test createOrderLineEntry transaction",
-        "arguments": [
-            "{\"ol_o_id\": \"1\" , \"ol_d_id\": \"1\" , \"ol_w_id\": \"1\" , \"ol_number\": \"3\" , \"ol_i_id\": \"3\" , \"ol_supply_w_id\": \"1\" , \"ol_delivery_d\": \"13/01/2023\" , \"ol_quantity\": \"5\" , \"ol_amount\": \"2300.80\" , \"ol_dist_info\": \"district1\"}"
-        ],
-        "transientData": { "key": "value"}
-    },
+
     
     {
         "transactionName": "createItemEntry",
         "transactionLabel": "A test createFirstItemEntry transaction",
         "arguments": [
-            "{\"i_id\" : \"1\",  \"i_im_id\" : \"100\",  \"i_name\" : \"cup\",  \"i_price\" : \"100.50\",  \"i_data\" : \"Luminark cup\" }"
+            "{\"i_id\" : 1,  \"i_im_id\" : 100,  \"i_name\" : \"cup\",  \"i_price\" : 100.50,  \"i_data\" : \"ORIGINAL\" }"
         ],
         "transientData": { "key": "value"}
     },
@@ -102,7 +95,7 @@
         "transactionName": "createItemEntry",
         "transactionLabel": "A test createSecondItemEntry transaction",
         "arguments": [
-            "{\"i_id\" : \"2\",  \"i_im_id\" : \"101\",  \"i_name\" : \"plate\",  \"i_price\" : \"120.50\",  \"i_data\" : \"Luminark plate\" }"
+            "{\"i_id\" : 2,  \"i_im_id\" : 101,  \"i_name\" : \"plate\",  \"i_price\" : 120.50,  \"i_data\" : \"ORIGINAL\" }"
         ],
         "transientData": { "key": "value"}
     },
@@ -111,7 +104,7 @@
         "transactionName": "createItemEntry",
         "transactionLabel": "A test createThirdItemEntry transaction",
         "arguments": [
-            "{\"i_id\" : \"3\",  \"i_im_id\" : \"102\",  \"i_name\" : \"spoon\",  \"i_price\" : \"90.50\",  \"i_data\" : \"spoon\" }"
+            "{\"i_id\" : 3,  \"i_im_id\" : 102,  \"i_name\" : \"spoon\",  \"i_price\" : 90.50,  \"i_data\" : \"GENERIC\" }"
         ],
         "transientData": { "key": "value"}
     },
@@ -119,7 +112,7 @@
         "transactionName": "createItemEntry",
         "transactionLabel": "A test createFourthItemEntry transaction",
         "arguments": [
-            "{\"i_id\" : \"4\",  \"i_im_id\" : \"103\",  \"i_name\" : \"fork\",  \"i_price\" : \"95.50\",  \"i_data\" : \"fork\" }"
+            "{\"i_id\" : 4,  \"i_im_id\" : 103,  \"i_name\" : \"fork\",  \"i_price\" : 95.50,  \"i_data\" : \"GENERIC\" }"
         ],
         "transientData": { "key": "value"}
     },
@@ -127,7 +120,7 @@
         "transactionName": "createItemEntry",
         "transactionLabel": "A test createFifthItemEntry transaction",
         "arguments": [
-            "{\"i_id\" : \"5\",  \"i_im_id\" : \"104\",  \"i_name\" : \"knife\",  \"i_price\" : \"99.50\",  \"i_data\" : \"knife\" }"
+            "{\"i_id\" : 5,  \"i_im_id\" : 104,  \"i_name\" : \"knife\",  \"i_price\" : 99.50,  \"i_data\" : \"ORIGINAL\" }"
         ],
         "transientData": { "key": "value"}
     },
@@ -136,7 +129,7 @@
         "transactionName": "createStockEntry",
         "transactionLabel": "A test createStock1Entry transaction",
         "arguments": [
-            "{\"s_i_id\" : \"1\", \"s_w_id\" : \"1\", \"s_quantity\" : \"100\", \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : \"45\", \"s_order_cnt\" : \"04\", \"s_remote_cnt\" : \"1\", \"s_data\" : \"sufficient\"}"
+            "{\"s_i_id\" : 1, \"s_w_id\" : 1, \"s_quantity\" : 100, \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : 90, \"s_order_cnt\" : 10, \"s_remote_cnt\" : 0, \"s_data\" : \"sufficient\"}"
         ],
         "transientData": { "key": "value"}
     },
@@ -145,7 +138,7 @@
         "transactionName": "createStockEntry",
         "transactionLabel": "A test createStock2Entry transaction",
         "arguments": [
-            "{\"s_i_id\" : \"2\", \"s_w_id\" : \"1\", \"s_quantity\" : \"100\", \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : \"45\", \"s_order_cnt\" : \"04\", \"s_remote_cnt\" : \"1\", \"s_data\" : \"sufficient\"}"
+            "{\"s_i_id\" : 2, \"s_w_id\" : 1, \"s_quantity\" : 100, \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : 85, \"s_order_cnt\" : 15, \"s_remote_cnt\" : 0, \"s_data\" : \"sufficient\"}"
         ],
         "transientData": { "key": "value"}
     },
@@ -154,7 +147,7 @@
         "transactionName": "createStockEntry",
         "transactionLabel": "A test createStock3Entry transaction",
         "arguments": [
-            "{\"s_i_id\" : \"3\", \"s_w_id\" : \"1\", \"s_quantity\" : \"100\", \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : \"45\", \"s_order_cnt\" : \"04\", \"s_remote_cnt\" : \"1\", \"s_data\" : \"sufficient\"}"
+            "{\"s_i_id\" : 3, \"s_w_id\" : 1, \"s_quantity\" : 100, \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : 87, \"s_order_cnt\" : 13, \"s_remote_cnt\" : 0, \"s_data\" : \"sufficient\"}"
         ],
         "transientData": { "key": "value"}
     },
@@ -163,7 +156,7 @@
         "transactionName": "createStockEntry",
         "transactionLabel": "A test createStock4Entry transaction",
         "arguments": [
-            "{\"s_i_id\" : \"4\", \"s_w_id\" : \"1\", \"s_quantity\" : \"100\", \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : \"45\", \"s_order_cnt\" : \"04\", \"s_remote_cnt\" : \"1\", \"s_data\" : \"sufficient\"}"
+            "{\"s_i_id\" : 4, \"s_w_id\" : 1, \"s_quantity\" : 100, \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : 50, \"s_order_cnt\" : 10, \"s_remote_cnt\" : 0, \"s_data\" : \"sufficient\"}"
         ],
         "transientData": { "key": "value"}
     },
@@ -172,7 +165,7 @@
         "transactionName": "createStockEntry",
         "transactionLabel": "A test createStock5Entry transaction",
         "arguments": [
-            "{\"s_i_id\" : \"5\", \"s_w_id\" : \"1\", \"s_quantity\" : \"100\", \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : \"45\", \"s_order_cnt\" : \"04\", \"s_remote_cnt\" : \"1\", \"s_data\" : \"sufficient\"}"
+            "{\"s_i_id\" : 5, \"s_w_id\" : 1, \"s_quantity\" : 100, \"s_dist_01\" : \"good\", \"s_dist_02\" : \"null\", \"s_dist_03\" : \"null\",\"s_dist_04\" : \"null\", \"s_dist_05\" : \"null\", \"s_dist_06\" : \"null\", \"s_dist_07\" : \"null\", \"s_dist_08\" : \"null\", \"s_dist_09\" : \"null\", \"s_dist_10\" : \"null\", \"s_ytd\" : 45, \"s_order_cnt\" : 20, \"s_remote_cnt\" : 0, \"s_data\" : \"sufficient\"}"
         ],
         "transientData": {
             "key": "value"

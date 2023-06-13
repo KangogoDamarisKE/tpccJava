@@ -53,7 +53,7 @@ public class Warehouse {
 
     @Property()
     //The sales tax of the warehouse.
-    public int w_tax;
+    public Double w_tax;
 
     @Property()
     //The year to date balance of the warehouse.

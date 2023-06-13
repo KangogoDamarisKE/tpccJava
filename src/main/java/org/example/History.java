@@ -20,6 +20,8 @@ package org.example;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
+
+
 @DataType()
 public class History {
 

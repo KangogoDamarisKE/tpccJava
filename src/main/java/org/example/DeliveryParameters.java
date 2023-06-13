@@ -17,7 +17,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
-import java.util.Date;
+//import java.util.Date;
 
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -34,10 +34,10 @@ public class DeliveryParameters {
 
     @Property()
     //The delivery date of the order.
-    public Date ol_delivery_d;
+    public String ol_delivery_d;
 
 
-    public DeliveryParameters(int w_id, int o_carrier_id, Date ol_delivery_d){
+    public DeliveryParameters(int w_id, int o_carrier_id, String ol_delivery_d){
         this.w_id = w_id;
         this.o_carrier_id = o_carrier_id;
         this.ol_delivery_d = ol_delivery_d;

@@ -17,7 +17,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.example;
 
-import java.util.Date;
+//import java.util.Date;
 
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -56,7 +56,7 @@ public class OrderLine {
 
     @Property()
     //The date of delivery.
-    public Date ol_delivery_d;
+    public String ol_delivery_d;
 
     @Property()
     //The quantity of items in the order line.

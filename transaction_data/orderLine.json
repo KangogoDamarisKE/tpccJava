@@ -1,5 +1,2 @@
-{
-    "ol_o_id": "001" , "ol_d_id": "001" , "ol_w_id": "001" , "ol_number": "001" , 
-    "ol_i_id": "001" , "ol_supply_w_id": "001" , "ol_delivery_d": "13/01/2023" , 
-    "ol_quantity": "005" , "ol_amount": "2300.80" , "ol_dist_info": "district001" 
+{"ol_o_id": 1 , "ol_d_id": 1 , "ol_w_id": 1, "ol_number": 10 , "ol_i_id": 1, "ol_supply_w_id":1, "ol_delivery_d": "13/01/2023" , "ol_quantity": 5 , "ol_amount": 2300.80, "ol_dist_info": "district001" 
 }

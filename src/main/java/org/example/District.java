@@ -57,7 +57,7 @@ public class District {
 
     @Property()
     //The sales tax of the district.
-    public int d_tax;
+    public Double d_tax;
 
     @Property()
     //The year to date balance of the district.

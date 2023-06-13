@@ -1,5 +1,1 @@
-{
-    "d_id": "001", "d_w_id" : "001", "d_name" : "I", "d_street_1" : "1022", 
-    "d_street_2" : "12", "d_city" : "Budapest", "d_state" : "Buda", 
-    "d_zip" : "+30", "d_tax": "001", "d_ytd" : "2023", "d_next_o_id": "002"
-}
+{"d_id": 1, "d_w_id" : 1, "d_name" : "I", "d_street_1" : "1022", "d_street_2" : "12", "d_city" : "Budapest", "d_state" : "Buda", "d_zip" : "+30", "d_tax": 15, "d_ytd" : 1000, "d_next_o_id": 2}

@@ -51,16 +51,7 @@ public class NewOrderParameters {
     public int[] i_qtys;
 
     public NewOrderParameters(){
-        
+
     }
 
-    // public NewOrderParameters(int w_id, int d_id, int c_id, String o_entry_d, int[] i_ids, int[] i_w_ids, int[] i_qtys){
-    //     this.w_id = w_id;
-    //     this.d_id = d_id;
-    //     this.c_id = c_id;
-    //     this.o_entry_d = o_entry_d;
-    //     this.i_ids = i_ids;
-    //     this.i_w_ids = i_w_ids;
-    //     this.i_qtys = i_qtys;
-    // }
 }
