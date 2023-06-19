@@ -24,6 +24,8 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 
+import com.google.gson.Gson;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ import java.util.logging.Logger;
  @DataType()
 public class LedgerUtils {
     private static final Logger LOGGER = Logger.getLogger(TPCC.class.getName());
+    static Gson gson = new Gson();
     
 
     /**
@@ -133,7 +136,7 @@ public class LedgerUtils {
         
         //final long start = System.currentTimeMillis();
         ctx.getStub().delState(key.toString());
-        LOGGER.info("Deleted state for entry: " + key);
+        LOGGER.info("Deleted state for entry: " + key.toString());
         //final long end = System.currentTimeMillis();
 
         // ctx.getTxinfo().stat_del_cnt += 1;
@@ -397,10 +400,11 @@ public class LedgerUtils {
     public static void updateCustomer(Context ctx, Customer entry) throws Exception {
 
         String[] keyParts = new String[]{common.pad(entry.c_w_id), common.pad(entry.c_d_id), common.pad(entry.c_id)};
-
+        LOGGER.info("update customer entry" + keyParts);
         LedgerUtils.updateEntry(ctx, TABLES.CUSTOMER, keyParts, entry);
 
         String[] lastNameKeyParts = new String[]{common.pad(entry.c_w_id), common.pad(entry.c_d_id), entry.c_last, common.pad(entry.c_id)};
+        LOGGER.info("update customer Last name entry table with" + lastNameKeyParts);
         LedgerUtils.updateEntry(ctx, TABLES.CUSTOMER_LAST_NAME, lastNameKeyParts, entry);
     } 
     
@@ -472,9 +476,12 @@ public class LedgerUtils {
      * @
      */
     public static void deleteNewOrder(Context ctx, NewOrder entry) throws Exception {
-
+        LOGGER.info("Begin delete oldest NewOrder" + gson.toJson(entry));
         String[] keyParts = new String[]{common.pad(entry.no_w_id), common.pad(entry.no_d_id), common.pad(entry.no_o_id)};
+        LOGGER.info("delete oldest NewOrder entry with key " + keyParts);
         LedgerUtils.deleteEntry(ctx, TABLES.NEW_ORDER, keyParts);
+        LOGGER.info("delete oldest NewOrder entry with key " + keyParts + "sucessful");
+
     }
 
     /**
@@ -503,12 +510,14 @@ public class LedgerUtils {
      * @return  The retrieved order.
      */
     public static Order getOrder(Context ctx, int o_w_id, int o_d_id, int o_id) throws Exception {
-        String[] keyParts = new String[] {common.pad(o_w_id), common.pad(o_d_id), common.pad(Integer.MAX_VALUE - o_id)};
+        String[] keyParts = new String[]{common.pad(o_w_id), common.pad(o_d_id), common.pad(Integer.MAX_VALUE - o_id)};
+        LOGGER.info("Begin getOrder with entry: " + keyParts);
         String entry = LedgerUtils.getEntry(ctx, TABLES.ORDERS, keyParts);
+        
         if (entry == null) {
             throw new Exception("Could not retrieve Order(" + o_w_id + ", " + o_d_id + ", "+ o_id + ")");
         }
-
+        LOGGER.info("getOrder returned " + entry);
         return ParseUtils.parseOrder(entry);
     }
 
@@ -522,12 +531,12 @@ public class LedgerUtils {
      * @throws Exception if the last order is not found.
      */
     public static Order getLastOrderOfCustomer(Context ctx, int o_w_id, int o_d_id, int o_c_id) throws Exception {
-            Function<String , Object> matchFunction = entry -> {
-            Order order = ParseUtils.parseOrder(entry);
-            if (order.o_c_id == o_c_id) {
-                return order;
-            }
-            return null;
+        Function<String , Object> matchFunction = entry -> {
+        Order order = ParseUtils.parseOrder(entry);
+        if (order.o_c_id == o_c_id) {
+            return order;
+        }
+        return null;
         };
         // log(`Searching for last Order(${o_w_id}, ${o_d_id}, o_id) of Customer(${o_w_id}, ${o_d_id}, ${o_c_id})`, ctx);
         
@@ -548,8 +557,10 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static void updateOrder(Context ctx, Order entry) throws Exception {
+        LOGGER.info("Begin update Order");
         String[] keyParts = new String[] {common.pad(entry.o_w_id), common.pad(entry.o_d_id), common.pad(Integer.MAX_VALUE - entry.o_id)};
         LedgerUtils.updateEntry(ctx, TABLES.ORDERS, keyParts, entry);
+        LOGGER.info("Order updated");
     }
 
     /**
@@ -581,12 +592,13 @@ public class LedgerUtils {
      */
     public static OrderLine getOrderLine(Context ctx, int ol_w_id, int ol_d_id, int ol_o_id, int ol_number) throws Exception {
         String[] keyParts = new String[] {common.pad(ol_w_id), common.pad(ol_d_id), common.pad(ol_o_id), common.pad(ol_number)};
+        LOGGER.info("Begin getOrdeline entry for keyparts " + keyParts);
         String entry = LedgerUtils.getEntry(ctx, TABLES.ORDER_LINE, keyParts);
 
         if (entry == null) {
             throw new Exception("Could not retrieve Order Line(" + ol_w_id + "," + ol_d_id + "," + ol_o_id + ", " + ol_number + ")");
         }
-
+        LOGGER.info("getOrdeline entry for keyparts " + keyParts + "Returned " + entry);
         //return entry ? ParseUtils.parseOrderLine(entry) : (OrderLine) null;
         return ParseUtils.parseOrderLine(entry);
     }
