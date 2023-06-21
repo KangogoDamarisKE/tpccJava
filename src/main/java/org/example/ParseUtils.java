@@ -118,7 +118,9 @@ public class ParseUtils {
      * @return {Customer} The customer object.
      */
     public static Customer parseCustomer(String jsonString) {
+        LOGGER.info("parse customer parameters");
         Customer custParams = gson.fromJson(jsonString, Customer.class);
+        LOGGER.info("return parsed customer parameters");
         return custParams;
     }
 

@@ -128,6 +128,7 @@ public class TPCC implements ContractInterface {
                 for (int i = 1; i <= order.o_ol_cnt; i++) {
                     LOGGER.info("getOrderLine");
                     OrderLine orderLine = LedgerUtils.getOrderLine(ctx, params.w_id, d_id, order.o_id, i);
+                    LOGGER.info("OrderLine: " + orderLine + "retrieved");
                     orderLineAmountTotal += orderLine.ol_amount;
                     orderLine.ol_delivery_d = params.ol_delivery_d;
                     LOGGER.info("updateOrderLine with orderLineAmountTotal " + orderLineAmountTotal + "and ol_delivery_d " + orderLine.ol_delivery_d);
@@ -140,6 +141,7 @@ public class TPCC implements ContractInterface {
                 // C_DELIVERY_CNT is incremented by 1.
                 LOGGER.info("getCustomer with W_ID, D_ID and C_ID" + params.w_id + "," + d_id + ","+ order.o_c_id);
                 Customer customer = LedgerUtils.getCustomer(ctx, params.w_id, d_id, order.o_c_id);
+                LOGGER.info("Customer: " + customer + "retrieved");
                 customer.c_balance += orderLineAmountTotal;
                 customer.c_delivery_cnt += 1;
                 LOGGER.info("updateCustomer. C_BALANCE is increased by the sum of all order-line amounts (OL_AMOUNT) previously retrieved and C_DELIVERY_CNT is incremented by 1 ");
@@ -152,7 +154,8 @@ public class TPCC implements ContractInterface {
             DoDeliveryOutput output = new DoDeliveryOutput(params.w_id, params.o_carrier_id, deliveredOrders, skipped);
 
             //common.log("Finished New Order TX with output" + output.toString(), ctx, "info");
-            LOGGER.info("Finished New Order TX with output" + gson.toJson(output));                       
+            LOGGER.info("Finished New Order TX with output" + gson.toJson(output)); 
+            System.out.println("Output : "  + output);                      
             return output;
         } catch (Exception err) {
             //common.log(err.toString(), ctx, "error");
@@ -198,7 +201,7 @@ public class TPCC implements ContractInterface {
             // selected and C_DISCOUNT, the customer's discount rate, C_LAST, the customer's
             // last name, and C_CREDIT, the customer's credit status, are retrieved.
             final Customer customer = LedgerUtils.getCustomer(ctx, warehouse.w_id, district.d_id, params.c_id);
-            LOGGER.info("Customer " + params.c_id + "with w_id " + warehouse.w_id + "and d_id" + district.d_id +  "retrieved");
+            LOGGER.info("Customer " + params.c_id + " with w_id " + warehouse.w_id + " and d_id " + district.d_id +  " retrieved");
             LOGGER.info(gson.toJson(customer));
             // A new row is inserted into both the NEW-ORDER table and the ORDER table to
             // reflect the creation of the new order. O_CARRIER_ID is set to a null value.
@@ -299,7 +302,7 @@ public class TPCC implements ContractInterface {
                 }
 
                 LedgerUtils.updateStock(ctx, stock);
-                LOGGER.info("Updating stock with " + gson.toJson(stock));
+                LOGGER.info("Updated stock with " + gson.toJson(stock));
 
                 // The amount for the item in the order (OL_AMOUNT) is computed as:
                 // OL_QUANTITY * I_PRICE
@@ -368,10 +371,10 @@ public class TPCC implements ContractInterface {
             // sum(OL_AMOUNT) * (1 - C_DISCOUNT) * (1 + W_TAX + D_TAX)
 
 
-// ERRORjava.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1occured command=run
             Double totalAmount = totalOrderLineAmount * (1 - customer.c_discount)
                     * (1 + warehouse.w_tax + district.d_tax);
-//////////////////////////////////////////////////////////////////////
+            LOGGER.info("total amount = " + totalAmount);
+            System.out.println(totalAmount);
 
             // 2.4.3.3 The emulated terminal must display, in the appropriate fields of
             // the input/ output screen, all input data and the output data resulting
@@ -396,8 +399,9 @@ public class TPCC implements ContractInterface {
             output.total_amount = totalAmount;
             output.items = itemsData;
 
-            //common.log("Finished New Order TX with output" + output.toString(), ctx, "info");
             LOGGER.info("Finished New Order TX with output" + gson.toJson(output));
+            // System.out.println("console output print" + gson.toJson(output));
+
             return output;
         } catch (Exception err) {
             LOGGER.info( "ERROR" + err.toString() + "occured");

@@ -23,6 +23,7 @@ import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
+//import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
 import com.google.gson.Gson;
 
@@ -58,7 +59,7 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static void createEntry(Context ctx, String type, String[] keyParts, Object entry) throws Exception {
-        LOGGER.info("Begin createEntry for input " + type + "and " + keyParts);
+        LOGGER.info("Begin createEntry for input " + type + " and " + keyParts);
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
         LOGGER.info("Created composite key " + key.toString());
 
@@ -66,12 +67,12 @@ public class LedgerUtils {
                
         byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
 
-        LOGGER.info("Entry string " + entryString + "to bytes " + buffer);
+        LOGGER.info("Entry string " + entryString + " to bytes " + buffer);
 
         //final long start = System.currentTimeMillis();
         ctx.getStub().putState(key.toString(), buffer);
 
-        LOGGER.info("createEntry() Created entry for key " + key + "With value: " + buffer);
+        LOGGER.info("createEntry() Created entry for key " + key + " With value: " + buffer);
         
     }
 
@@ -155,32 +156,36 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static List<Object> select(Context ctx, String type, String[] keyParts, Function<String, Object> matchFunction, boolean firstMatch) throws Exception {
+        LOGGER.info("Start of select function:");
         CompositeKey compositeKey = ctx.getStub().createCompositeKey(type, keyParts);
         Iterator<KeyValue> iterator = ctx.getStub().getStateByPartialCompositeKey(compositeKey.toString()).iterator();
+        //QueryResultsIterator<KeyValue> iterator = ctx.getStub().getStateByPartialCompositeKey(compositeKey.toString());
+   
         List<Object> matches = new ArrayList<>();
         //int retrieved = 0;
         try {
-            while (iterator.hasNext()) {
-                
+            LOGGER.info("iteration to retrieve next entry");
+            while (iterator.hasNext()) {                
                 KeyValue res = iterator.next(); 
                 //retrieved += 1;
                 byte[] buffer = res.getValue();  
-                String entry = new String(buffer);
-                //log("Enumerated entry:");
+                String entry = new String(buffer, StandardCharsets.UTF_8);
+                LOGGER.info("Enumerated entry:");
 
                 Object match = matchFunction.apply(entry);
                 if (match != null) {
+                    LOGGER.info("Add matches to list");
                     matches.add(match);
-
                     if (firstMatch) {
                         break;
                     }
                 }
             }
+            LOGGER.info("Exit SELECT()");
         } catch (Exception e) {
             common.log(e.toString(), ctx, "error");
             throw e;        
-        }
+        } 
         return firstMatch ? matches.subList(0, 1) : matches;
     }
     /**
@@ -210,7 +215,7 @@ public class LedgerUtils {
      * @return The retrieved warehouse.
      */
     public static Warehouse getWarehouse(Context ctx, int w_id) throws Exception{
-        LOGGER.info("LedgerUtils.getWarehouse: Attempt to retrieve warehouse details  for " + w_id);
+        LOGGER.info("LedgerUtils.getWarehouse: Attempt to retrieve warehouse details  for warehouse: " + w_id);
         String entry = LedgerUtils.getEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(w_id)});
 
         if (entry == null) {
@@ -334,13 +339,15 @@ public class LedgerUtils {
      * @throws Exception
      */
     public static List<Customer> getCustomersByLastName(Context ctx, int c_w_id, int c_d_id, String c_last) throws Exception {
+        LOGGER.info("getCustomerByLastName");
         Function<String, Object> matchFunction = entry -> {
             Customer customer = ParseUtils.parseCustomer(entry);
             if(customer.c_last == c_last)
             {
-                LOGGER.info(customer.c_last + "== " + c_last );
+                LOGGER.info("Customer's last name " + customer.c_last + "== " + "Last Name" + c_last );
                 return customer;
             }
+            LOGGER.info("Customer's last name " + customer.c_last + "!= to" + "Last Name" + c_last );
             return null;
         };
         String[] keyParts = new String[]{common.pad(c_w_id), common.pad(c_d_id), c_last};  
@@ -435,37 +442,56 @@ public class LedgerUtils {
      * @param entry The JSON string.
      * @
      */
-    public static void createNewOrder(Context ctx, Object entry) throws Exception {
+    public static void createNewOrder(Context ctx, Object entry) throws Exception { 
+        LOGGER.info("Create new order entry");
         NewOrder newOrder = entry instanceof String ? ParseUtils.parseNewOrder((String) entry) : (NewOrder) entry;
 
         String[] keyParts = new String[]{common.pad(newOrder.no_w_id), common.pad(newOrder.no_d_id), common.pad(newOrder.no_o_id)};
         LedgerUtils.createEntry(ctx, TABLES.NEW_ORDER, keyParts, entry);
+        LOGGER.info("Create new order entry COMPLETE!!");
     }
 
+    // /**
+    //  * Retrieves the oldest new order from the state database that matches the given partial key.
+    //  * @param {Context} ctx The TX context.
+    //  * @param {number} no_w_id The new order's warehouse ID.
+    //  * @param {number} no_d_id The new order's district ID.
+    //  * @return The oldest new order.
+    //  * @throws Exception 
+    //  */
+    // public static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
+    //     LOGGER.info("Searching for oldest New Order(" + no_w_id + "," + no_d_id);        
+    //     Function<String, Object> matchFunction = entry -> {
+    //         NewOrder old = ParseUtils.parseNewOrder(entry); 
+
+    //         if (old.no_w_id == no_w_id) {
+    //             return old;
+    //         }
+    //         return null;
+    //     };
+
+    //     String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};        
+
+    //     List<Object> oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, matchFunction, true);
+    //     // if (oldest) {
+    //     //     log("Retrieved oldest oldest New Order(" + no_w_id + "," + no_d_id + "," + oldest.no_o_id + ")" , ctx);
+    //     // }
+    //     return (NewOrder) oldest;
+    // }
     /**
      * Retrieves the oldest new order from the state database that matches the given partial key.
-     * @param {Context} ctx The TX context.
-     * @param {number} no_w_id The new order's warehouse ID.
-     * @param {number} no_d_id The new order's district ID.
+     * @param ctx The TX context.
+     * @param no_w_id The new order's warehouse ID.
+     * @param no_d_id The new order's district ID.
      * @return The oldest new order.
-     * @throws Exception 
      */
-    public static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
-        //log("Searching for oldest New Order(" + no_w_id + "," + no_d_id + "," + no_o_id , ctx);        
-        Function<String, Object> matchFunction = entry -> {
-            NewOrder old = ParseUtils.parseNewOrder(entry); 
-            if (old.no_w_id == no_w_id) {
-                return old;
-            }
-            return null;
-        };
-
-        String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};        
-
-        List<Object> oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, matchFunction, true);
-        // if (oldest) {
-        //     log("Retrieved oldest oldest New Order(" + no_w_id + "," + no_d_id + "," + oldest.no_o_id + ")" , ctx);
+    static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
+        LOGGER.info("Searching for oldest New Order for warehouse " + no_w_id +" and district " + no_d_id );
+        List<Object> oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, new String[]{common.pad(no_w_id), common.pad( no_d_id)}, ParseUtils::parseNewOrder, true);
+        // if (oldest != null) {
+        //     LOGGER.info("Retrieved oldest oldest New Order( " + no_w_id + "," + no_d_id + "," + oldest.no_o_id + ")");
         // }
+        LOGGER.info("Retrieved oldest oldest New Order( " + oldest);
         return (NewOrder) oldest;
     }
 
@@ -480,7 +506,7 @@ public class LedgerUtils {
         String[] keyParts = new String[]{common.pad(entry.no_w_id), common.pad(entry.no_d_id), common.pad(entry.no_o_id)};
         LOGGER.info("delete oldest NewOrder entry with key " + keyParts);
         LedgerUtils.deleteEntry(ctx, TABLES.NEW_ORDER, keyParts);
-        LOGGER.info("delete oldest NewOrder entry with key " + keyParts + "sucessful");
+        LOGGER.info("Oldest NewOrder entry with key " + keyParts + "deleted");
 
     }
 
@@ -541,12 +567,12 @@ public class LedgerUtils {
         // log(`Searching for last Order(${o_w_id}, ${o_d_id}, o_id) of Customer(${o_w_id}, ${o_d_id}, ${o_c_id})`, ctx);
         
         String[] keyParts = new String[]{common.pad(o_w_id), common.pad(o_d_id)};
-        List<Object> lastOrder = select(ctx, TABLES.ORDERS, keyParts, matchFunction, true);
+        Order lastOrder = (Order) select(ctx, TABLES.ORDERS, keyParts, matchFunction, true);
         if (lastOrder == null) {
             throw new Exception(String.format("Could not find last Order(%d, %d, o_id) of Customer(%d, %d, %d)", o_w_id, o_d_id, o_w_id, o_d_id, o_c_id));
         }
         // log(`Retrieved last Order(${o_w_id}, ${o_d_id}, ${lastOrder.o_id}) of Customer(${o_w_id}, ${o_d_id}, ${o_c_id})`, ctx);
-        return (Order) lastOrder;
+        return lastOrder;
     }
 
 
