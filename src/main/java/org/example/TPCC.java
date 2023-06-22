@@ -411,7 +411,8 @@ public class TPCC implements ContractInterface {
 
             LOGGER.info("Finished New Order TX with output" + gson.toJson(output));
             // System.out.println("console output print" + gson.toJson(output));
-
+            System.out.println("THIS IS THE OUTPUT" + output);
+            
             return output;
         } catch (Exception err) {
             LOGGER.info("ERROR" + err.toString() + "occured");

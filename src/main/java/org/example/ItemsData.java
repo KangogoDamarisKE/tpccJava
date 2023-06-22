@@ -3,27 +3,27 @@ package org.example;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
-@DataType
+@DataType()
 public class ItemsData {
-    @Property
+    @Property()
     int ol_supply_w_id;
-    @Property
+    @Property()
     int ol_i_id;
-    @Property
+    @Property()
     String i_name;
-    @Property
+    @Property()
     int ol_quantity;
-    @Property
+    @Property()
     int s_quantity;
-    @Property
+    @Property()
     String brand_generic;
-    @Property
+    @Property()
     Double i_price;
-    @Property
+    @Property()
     Double ol_amount;
 
-    public ItemsData(int ol_supply_w_id, int ol_i_id, String i_name, int ol_quantity, int s_quantity, String brand_generic, 
-    Double i_price, Double ol_amount){
+    public ItemsData(int ol_supply_w_id, int ol_i_id, String i_name, int ol_quantity, 
+    int s_quantity, String brand_generic, Double i_price, Double ol_amount){
         this.ol_supply_w_id = ol_supply_w_id;
         this.ol_i_id = ol_i_id;
         this.i_name = i_name;
@@ -33,8 +33,5 @@ public class ItemsData {
         this.i_price = i_price;
         this.ol_amount = ol_amount;
     }
-    // public ItemsData(){
-
-    // }
 
 }

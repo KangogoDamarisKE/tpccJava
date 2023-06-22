@@ -544,7 +544,7 @@ public class LedgerUtils {
             throw new Exception("Could not retrieve Order(" + o_w_id + ", " + o_d_id + ", "+ o_id + ")");
         }
         LOGGER.info("getOrder returned " + entry);
-        return ParseUtils.parseOrder(entry);
+        return entry != null ? ParseUtils.parseOrder(entry) : null;
     }
 
     /**
@@ -626,7 +626,7 @@ public class LedgerUtils {
         }
         LOGGER.info("getOrdeline entry for keyparts " + keyParts + "Returned " + entry);
         //return entry ? ParseUtils.parseOrderLine(entry) : (OrderLine) null;
-        return ParseUtils.parseOrderLine(entry);
+        return entry != null ? ParseUtils.parseOrderLine(entry):null;
     }
 
 
@@ -669,7 +669,7 @@ public class LedgerUtils {
     public static Item getItem(Context ctx, int i_id) throws Exception {
         String entry = LedgerUtils.getEntry(ctx, TABLES.ITEM, new String[] {common.pad(i_id)});
         //return entry ? ParseUtils.parseItem(entry) : (Item) null;
-        return ParseUtils.parseItem(entry);
+        return entry != null ? ParseUtils.parseItem(entry): null;
     }
 
     /**
@@ -732,7 +732,7 @@ public class LedgerUtils {
         }
 
         //return entry ? ParseUtils.parseStock(entry) : (Stock)null;
-        return ParseUtils.parseStock(entry);
+        return entry != null ? ParseUtils.parseStock(entry):null;
     }
 
     /**

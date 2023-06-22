@@ -1,12 +1,21 @@
 package org.example;
 
+import org.hyperledger.fabric.contract.annotation.DataType;
+import org.hyperledger.fabric.contract.annotation.Property;
+
 //import java.util.Date;
 
+@DataType()
 public class OrderLineData {
+    @Property()
     public int ol_supply_w_id;
+    @Property()
     public int ol_i_id;
+    @Property()
     public int ol_quantity;
+    @Property()
     public Double ol_amount;
+    @Property()
     public String ol_delivery_d;
 
     public OrderLineData(){

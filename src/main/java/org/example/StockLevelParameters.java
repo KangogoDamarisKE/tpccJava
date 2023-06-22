@@ -21,7 +21,7 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
 
-@DataType
+@DataType()
 public class StockLevelParameters {
     @Property()
     //The warehouse ID.
