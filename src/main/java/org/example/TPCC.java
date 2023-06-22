@@ -224,7 +224,9 @@ public class TPCC implements ContractInterface {
             newOrder.no_d_id = district.d_id;
             newOrder.no_w_id = warehouse.w_id;
 
-            LedgerUtils.createNewOrder(ctx, newOrder);
+            String jsonNewOrder = gson.toJson(newOrder);
+
+            LedgerUtils.createNewOrder(ctx, jsonNewOrder);
             LOGGER.info("New Order " + gson.toJson(newOrder) + "created");
 
             boolean allItemsLocal = Arrays.stream(params.i_w_ids).allMatch(i_w_id -> i_w_id == warehouse.w_id);
@@ -239,7 +241,8 @@ public class TPCC implements ContractInterface {
             order.o_ol_cnt = params.i_ids.length;
             order.o_all_local = allItemsLocal ? 1 : 0;
 
-            LedgerUtils.createOrder(ctx, order);
+            String jsonOrder = gson.toJson(order);
+            LedgerUtils.createOrder(ctx, jsonOrder);
             LOGGER.info("Created Order " + gson.toJson(order));
 
             List<ItemsData> itemsData = new ArrayList<>();
@@ -352,7 +355,9 @@ public class TPCC implements ContractInterface {
                 orderLine.ol_amount = orderLineAmount;
                 orderLine.ol_dist_info = ("s_dist_" + stockDistrictId);
 
-                LedgerUtils.createOrderLine(ctx, orderLine);
+                String jsonOL= gson.toJson(orderLine);
+
+                LedgerUtils.createOrderLine(ctx, jsonOL);
                 LOGGER.info("OrderLine " + gson.toJson(orderLine) + " created");
 
                 // 2.4.3.3 The emulated terminal must display, in the appropriate fields of
@@ -845,37 +850,11 @@ public class TPCC implements ContractInterface {
 
     }
 
-    // @Transaction
-    // public String initWarehouse(Context ctx){
-    // try {
-    // Warehouse warehouse = new Warehouse();
-    // warehouse.w_id = 3;
-    // warehouse.w_name = "TWO";
-    // warehouse.w_street_1 = "xyz";
-    // warehouse.w_street_2 = "123";
-    // warehouse.w_city = "Budapest";
-    // warehouse.w_state = "Buda";
-    // warehouse.w_zip = "+30";
-    // warehouse.w_tax = 1125;
-    // warehouse.w_ytd = 10000;
-
-    // String jsonWarehouse = gson.toJson(warehouse);
-    // LOGGER.info("Warehouse json string is " + jsonWarehouse);
-
-    // LedgerUtils.createWarehouse(ctx, jsonWarehouse);
-    // return jsonWarehouse;
-    // } catch (Exception e) {
-    // LOGGER.info("Problem occured while passing json string caused by" + e);
-    // e.printStackTrace();
-    // }
-    // return null;
-    // }
-
     @Transaction
     public String readWarehouseEntry(Context ctx, int w_id) throws Exception {
         LOGGER.info("Attemp to retrieve warehouse details  for " + w_id);
         Warehouse warehouse = LedgerUtils.getWarehouse(ctx, w_id);
-        LOGGER.info("Warehouse" + warehouse.w_id + "Exist" + warehouse.toString() + " returned");
+        LOGGER.info("Warehouse " + warehouse.w_id + " Exist. " + gson.toJson(warehouse) + " returned");
         return gson.toJson(warehouse);
     }
 

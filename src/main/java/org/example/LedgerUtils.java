@@ -63,7 +63,7 @@ public class LedgerUtils {
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
         LOGGER.info("Created composite key " + key.toString());
 
-        String entryString = entry instanceof String ? (String) entry : entry.toString();
+        String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
                
         byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
 
@@ -87,11 +87,12 @@ public class LedgerUtils {
     public static void updateEntry(Context ctx, String type, String[] keyParts, Object entry) throws Exception {
         LOGGER.info("Beginning updateEntry for type " + type + " " + keyParts);
         CompositeKey key = ctx.getStub().createCompositeKey(type, keyParts);
-        String entryString = entry instanceof String ? (String) entry : entry.toString();
+        String entryString = entry instanceof String ? (String) entry : gson.toJson(entry);
         
         byte[] buffer = entryString.getBytes(StandardCharsets.UTF_8);
         
         ctx.getStub().putState(key.toString(), buffer);   
+
         LOGGER.info("UpdateEntry complete for Key " +key + "Value: " + buffer);     
     }
 
@@ -231,7 +232,8 @@ public class LedgerUtils {
      * @param entry The warehouse object.
      * @throws Exception
      */
-    public static void updateWarehouse(Context ctx, Warehouse entry) throws Exception {        
+    public static void updateWarehouse(Context ctx, Warehouse entry) throws Exception {   
+        LOGGER.info("Begin update Warehouse ");
         LedgerUtils.updateEntry(ctx, TABLES.WAREHOUSE, new String[]{common.pad(entry.w_id)}, entry);
         LOGGER.info("updateWarehouse COMPLETE!!!");
     }
@@ -450,34 +452,7 @@ public class LedgerUtils {
         LedgerUtils.createEntry(ctx, TABLES.NEW_ORDER, keyParts, entry);
         LOGGER.info("Create new order entry COMPLETE!!");
     }
-
-    // /**
-    //  * Retrieves the oldest new order from the state database that matches the given partial key.
-    //  * @param {Context} ctx The TX context.
-    //  * @param {number} no_w_id The new order's warehouse ID.
-    //  * @param {number} no_d_id The new order's district ID.
-    //  * @return The oldest new order.
-    //  * @throws Exception 
-    //  */
-    // public static NewOrder getOldestNewOrder(Context ctx, int no_w_id, int no_d_id) throws Exception {
-    //     LOGGER.info("Searching for oldest New Order(" + no_w_id + "," + no_d_id);        
-    //     Function<String, Object> matchFunction = entry -> {
-    //         NewOrder old = ParseUtils.parseNewOrder(entry); 
-
-    //         if (old.no_w_id == no_w_id) {
-    //             return old;
-    //         }
-    //         return null;
-    //     };
-
-    //     String[] keyParts = new String[]{common.pad(no_w_id), common.pad(no_d_id)};        
-
-    //     List<Object> oldest = LedgerUtils.select(ctx, TABLES.NEW_ORDER, keyParts, matchFunction, true);
-    //     // if (oldest) {
-    //     //     log("Retrieved oldest oldest New Order(" + no_w_id + "," + no_d_id + "," + oldest.no_o_id + ")" , ctx);
-    //     // }
-    //     return (NewOrder) oldest;
-    // }
+  
     /**
      * Retrieves the oldest new order from the state database that matches the given partial key.
      * @param ctx The TX context.
