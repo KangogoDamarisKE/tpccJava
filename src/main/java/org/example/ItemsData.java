@@ -1,16 +1,25 @@
 package org.example;
 
 import org.hyperledger.fabric.contract.annotation.DataType;
+import org.hyperledger.fabric.contract.annotation.Property;
 
 @DataType
 public class ItemsData {
+    @Property
     int ol_supply_w_id;
+    @Property
     int ol_i_id;
+    @Property
     String i_name;
+    @Property
     int ol_quantity;
+    @Property
     int s_quantity;
+    @Property
     String brand_generic;
+    @Property
     Double i_price;
+    @Property
     Double ol_amount;
 
     public ItemsData(int ol_supply_w_id, int ol_i_id, String i_name, int ol_quantity, int s_quantity, String brand_generic, 
